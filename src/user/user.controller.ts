@@ -110,6 +110,8 @@ export class UserController {
       });
     }
 
+    this.userService.remove(id);
+
     return res.status(HttpStatus.NO_CONTENT).send();
   }
 }

@@ -10,7 +10,7 @@ import { UUIDService } from 'src/uuid/uuid.service';
 export class UserService {
   constructor(private readonly dbService: DatabaseService, private readonly uuidService: UUIDService) {}
   
-  create({ login, password}: CreateUserDto) {
+  create({ login, password}: CreateUserDto): User {
     const timestamp = new Date().valueOf();
     const user: User = {
       id: this.uuidService.generate(),

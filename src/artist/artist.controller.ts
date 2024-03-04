@@ -59,19 +59,27 @@ export class ArtistController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateArtistDto: UpdateArtistDto) {
+  update(@Param('id') id: string, @Body() updateArtistDto: UpdateArtistDto, @Res() res: Response) {
     const { name, grammy } = updateArtistDto;
     const errors: Partial<Record<keyof UpdateArtistDto, string>> = {};
 
-    if (typeof name !== undefined && (typeof name !== 'string' || name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH)) {
+    if (typeof name !== 'undefined' && (typeof name !== 'string' || name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH)) {
       errors.name = 'Field "name" is invalid';
     }
 
-    if (typeof grammy !== undefined && typeof grammy !== 'boolean') {
+    if (typeof grammy !== 'undefined' && typeof grammy !== 'boolean') {
       errors.grammy = 'Field "grammy" is invalid';
     }
 
-    return this.artistService.update(id, updateArtistDto);
+    if (Object.keys(errors).length !== 0) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        errors
+      });
+    }
+
+    this.artistService.update(id, updateArtistDto)
+
+    return res.status(HttpStatus.ACCEPTED).json(this.artistService.findOne(id));
   }
 
   @Delete(':id')

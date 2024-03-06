@@ -9,7 +9,7 @@ import { Artist } from './entities/artist.entity';
 export class ArtistService {
   constructor(private readonly dbService: DatabaseService, private readonly uuidService: UUIDService) {}
 
-  create({ name, grammy }: CreateArtistDto) {
+  create({ name, grammy }: CreateArtistDto): Artist {
     const artist: Artist = {
       id: this.uuidService.generate(),
       name,
@@ -21,15 +21,15 @@ export class ArtistService {
     return artist;
   }
 
-  findAll() {
+  findAll(): Artist[] {
     return this.dbService.artists;
   }
 
-  findOne(id: string) {
+  findOne(id: string): Artist | undefined {
     return this.dbService.artists.find((artist) => artist.id === id);
   }
 
-  update(id: string, { name, grammy }: UpdateArtistDto) {
+  update(id: string, { name, grammy }: UpdateArtistDto): void {
     this.dbService.artists = this.dbService.artists.map((artist) => {
       if (artist.id === id) {
         return {
@@ -43,7 +43,7 @@ export class ArtistService {
     });
   }
 
-  remove(id: string) {
-    this.dbService.artists = this.dbService.artists.filter((artist) => artist.id === id);
+  remove(id: string): void {
+    this.dbService.artists = this.dbService.artists.filter((artist) => artist.id !== id);
   }
 }

@@ -6,9 +6,9 @@ import { UUIDService } from 'src/uuid/uuid.service';
 import { Response } from 'express';
 
 const MIN_NAME_LENGTH = 1;
-const MAX_NAME_LENGTH = 64;
+const MAX_NAME_LENGTH = 128;
 
-@Controller('artist')
+@Controller()
 export class ArtistController {
   constructor(private readonly artistService: ArtistService, private readonly uuidService: UUIDService) {}
 
@@ -55,19 +55,25 @@ export class ArtistController {
       });
     }
 
-    return this.artistService.findOne(id);
+    return res.status(HttpStatus.OK).json(artist);
   }
 
   @Put(':id')
   update(@Param('id') id: string, @Body() updateArtistDto: UpdateArtistDto, @Res() res: Response) {
+    if (!this.uuidService.validate(id)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        error: `ID=${id} is not valid UUID`,
+      });
+    }
+    
     const { name, grammy } = updateArtistDto;
     const errors: Partial<Record<keyof UpdateArtistDto, string>> = {};
 
-    if (typeof name !== 'undefined' && (typeof name !== 'string' || name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH)) {
+    if (typeof name !== 'string' || name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH) {
       errors.name = 'Field "name" is invalid';
     }
 
-    if (typeof grammy !== 'undefined' && typeof grammy !== 'boolean') {
+    if (typeof grammy !== 'boolean') {
       errors.grammy = 'Field "grammy" is invalid';
     }
 
@@ -77,9 +83,17 @@ export class ArtistController {
       });
     }
 
+    const artist = this.artistService.findOne(id);
+
+    if (!artist) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        error: `Artist with ID=${id} is not found`,
+      });
+    }
+
     this.artistService.update(id, updateArtistDto)
 
-    return res.status(HttpStatus.ACCEPTED).json(this.artistService.findOne(id));
+    return res.status(HttpStatus.OK).json(this.artistService.findOne(id));
   }
 
   @Delete(':id')

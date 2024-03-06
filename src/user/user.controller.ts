@@ -4,9 +4,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UUIDService } from 'src/uuid/uuid.service';
 import { Response } from 'express';
+import { User } from './entities/user.entity';
 
 const MIN_LOGIN_LENGTH = 1;
-const MIN_PASSWORD_LENGTH = 5;
+const MAX_LOGIN_LENGTH = 128;
+const MIN_PASSWORD_LENGTH = 4;
+const MAX_PASSWORD_LENGTH = 128;
+
+const filterPasswordOut = ({ password, ...user}: User): Omit<User, 'password'> => user;
 
 @Controller()
 export class UserController {
@@ -17,12 +22,12 @@ export class UserController {
     const { login, password } = createUserDto;
     const errors: Partial<Record<keyof CreateUserDto, string>> = {};
 
-    if (login?.length < MIN_LOGIN_LENGTH) {
-      errors.login = 'Login is not provided or invalid';
+    if (typeof login !== 'string' || login.length < MIN_LOGIN_LENGTH || login.length > MAX_LOGIN_LENGTH) {
+      errors.login = 'Field "login" is not provided or invalid';
     } 
     
-    if (password.length < MIN_PASSWORD_LENGTH) {
-      errors.password = 'Password is not provided or invalid';
+    if (typeof password !== 'string' || password.length < MIN_PASSWORD_LENGTH || password.length > MAX_PASSWORD_LENGTH) {
+      errors.password = 'Field "password" is not provided or invalid';
     }
 
     if (Object.keys(errors).length !== 0) {
@@ -31,12 +36,12 @@ export class UserController {
       });
     }
 
-    return res.status(HttpStatus.CREATED).json(this.userService.create(createUserDto));
+    return res.status(HttpStatus.CREATED).json(filterPasswordOut(this.userService.create(createUserDto)));
   }
 
   @Get()
   findAll() {
-    return this.userService.findAll();
+    return this.userService.findAll().map(filterPasswordOut);
   }
 
   @Get(':id')
@@ -55,15 +60,31 @@ export class UserController {
       });
     }
 
-    return res.status(HttpStatus.ACCEPTED).json(this.userService.findOne(id));
+    return res.status(HttpStatus.OK).json(filterPasswordOut(user));
   }
 
   @Put(':id')
   update(@Param('id') id: string, @Body() updatePasswordDto: UpdatePasswordDto, @Res() res: Response) {
-    const { newPassword, oldPassword } = updatePasswordDto;
     if (!this.uuidService.validate(id)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         error: `ID=${id} is not valid UUID`,
+      });
+    }
+
+    const { newPassword, oldPassword } = updatePasswordDto;
+    const errors: Partial<Record<keyof UpdatePasswordDto, string>> = {};
+
+    if (typeof newPassword !== 'string' || newPassword.length < MIN_PASSWORD_LENGTH || newPassword.length > MAX_PASSWORD_LENGTH) {
+      errors.newPassword = 'Field "newPassword" is not provided or invalid'
+    }
+
+    if (typeof oldPassword !== 'string' || oldPassword.length < MIN_PASSWORD_LENGTH || oldPassword.length > MAX_PASSWORD_LENGTH) {
+      errors.oldPassword = 'Field "oldPassword" is not provided or invalid'
+    }
+
+    if (Object.keys(errors).length !== 0) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        errors
       });
     }
 
@@ -77,21 +98,13 @@ export class UserController {
     
     if (user.password !== oldPassword) {
       return res.status(HttpStatus.FORBIDDEN).json({
-        error: 'Password is incorrect'
-      });
-    }
-    
-    if (newPassword.length < MIN_PASSWORD_LENGTH) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        errors: {
-          newPassword: 'Password is not provided or invalid',
-        }
+        error: 'Passwords don\'t match'
       });
     }
 
     this.userService.update(id, updatePasswordDto)
 
-    return res.status(HttpStatus.ACCEPTED).json(this.userService.findOne(id));
+    return res.status(HttpStatus.OK).json(filterPasswordOut(this.userService.findOne(id)));
   }
 
   @Delete(':id')

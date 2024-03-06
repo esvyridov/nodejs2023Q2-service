@@ -8,6 +8,7 @@ import { ArtistModule } from 'src/artist/artist.module';
 @Module({
   imports: [DatabaseModule, UUIDModule, ArtistModule],
   controllers: [AlbumController],
-  providers: [AlbumService]
+  providers: [AlbumService],
+  exports: [AlbumService],
 })
 export class AlbumModule {}

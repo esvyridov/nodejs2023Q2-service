@@ -9,8 +9,7 @@ import { Track } from './entities/track.entity';
 export class TrackService {
   constructor(private readonly dbService: DatabaseService, private readonly uuidService: UUIDService) {}
 
-  create({ name, artistId, albumId, duration }: CreateTrackDto) {
-    const timestamp = new Date().valueOf();
+  create({ name, artistId, albumId, duration }: CreateTrackDto): Track {
     const track: Track = {
       id: this.uuidService.generate(),
       name,
@@ -24,19 +23,31 @@ export class TrackService {
     return track;
   }
 
-  findAll() {
+  findAll(): Track[] {
     return this.dbService.tracks;
   }
 
-  findOne(id: string) {
+  findOne(id: string): Track | undefined {
     return this.dbService.tracks.find((track) => track.id === id);
   }
 
-  update(id: string, updateTrackDto: UpdateTrackDto) {
-    return `This action updates a #${id} track`;
+  update(id: string, { name, artistId, albumId, duration }: UpdateTrackDto): void {
+    this.dbService.tracks = this.dbService.tracks.map((track) => {
+      if (track.id === id) {
+        return {
+          ...track,
+          name,
+          artistId,
+          albumId,
+          duration,
+        }
+      }
+      
+      return track;
+    });
   }
 
-  remove(id: string) {
-    this.dbService.tracks = this.dbService.tracks.filter((track) => track.id === id);
+  remove(id: string): void {
+    this.dbService.tracks = this.dbService.tracks.filter((track) => track.id !== id);
   }
 }

@@ -3,7 +3,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { User } from './entities/user.entity';
-import { v4 as uuidv4 } from 'uuid';
 import { UUIDService } from 'src/uuid/uuid.service';
 
 @Injectable()
@@ -16,7 +15,7 @@ export class UserService {
       id: this.uuidService.generate(),
       login,
       password,
-      version: 0, 
+      version: 1, 
       createdAt: timestamp,
       updatedAt: timestamp,
     };
@@ -26,15 +25,15 @@ export class UserService {
     return user;
   }
 
-  findAll() {
+  findAll(): User[] {
     return this.dbService.users;
   }
 
-  findOne(id: string) {
+  findOne(id: string): User | undefined {
     return this.dbService.users.find((user) => user.id === id);
   }
 
-  update(id: string, { newPassword }: UpdatePasswordDto) {
+  update(id: string, { newPassword }: UpdatePasswordDto): void {
     const timestamp = new Date().valueOf();
     this.dbService.users = this.dbService.users.map((user) => {
       if (user.id === id) {
@@ -50,7 +49,7 @@ export class UserService {
     });
   }
 
-  remove(id: string) {
-    this.dbService.users = this.dbService.users.filter((user) => user.id === id);
+  remove(id: string): void {
+    this.dbService.users = this.dbService.users.filter((user) => user.id !== id);
   }
 }

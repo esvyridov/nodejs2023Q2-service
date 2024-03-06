@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, Res, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpStatus, Res, Put } from '@nestjs/common';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
@@ -7,9 +7,9 @@ import { Response } from 'express';
 import { ArtistService } from 'src/artist/artist.service';
 
 const MIN_NAME_LENGTH = 1;
-const MAX_NAME_LENGTH = 64;
+const MAX_NAME_LENGTH = 128;
 
-@Controller('album')
+@Controller()
 export class AlbumController {
   constructor(private readonly albumService: AlbumService, private readonly uuidService: UUIDService, private readonly artistService: ArtistService) {}
 
@@ -26,13 +26,15 @@ export class AlbumController {
       errors.year = 'Field "year" is not provided or invalid';
     }
 
-    if (typeof artistId !== 'string') {
+    if (typeof artistId !== 'string' && artistId !== null) {
       errors.artistId = 'Field "artistId" is not provided or invalid';
     } else {
-      const artist = this.artistService.findOne(artistId);
-
-      if (!artist) {
-        errors.artistId = `Artist with ID=${artistId} is not found`;
+      if (artistId !== null) {
+        const artist = this.artistService.findOne(artistId);
+  
+        if (!artist) {
+          errors.artistId = `Artist with ID=${artistId} is not found`;
+        }
       }
     }
 
@@ -66,7 +68,7 @@ export class AlbumController {
       });
     }
 
-    return this.albumService.findOne(id);
+    return res.status(HttpStatus.OK).json(album);
   }
 
   @Put(':id')
@@ -77,29 +79,21 @@ export class AlbumController {
       });
     }
 
-    const artist = this.artistService.findOne(id);
-
-    if (!artist) {
-      return res.status(HttpStatus.NOT_FOUND).json({
-        error: `Album with ID=${id} is not found`,
-      });
-    }
-
     const { name, year, artistId } = updateAlbumDto;
     const errors: Partial<Record<keyof UpdateAlbumDto, string>> = {};
 
-    if (typeof name !== 'undefined' && (typeof name !== 'string' || name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH)) {
+    if (typeof name !== 'string' || name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH) {
       errors.name = 'Field "name" is not provided or invalid';
     }
 
-    if (typeof year !== 'undefined' && typeof year !== 'number') {
+    if (typeof year !== 'number') {
       errors.year = 'Field "year" is not provided or invalid';
     }
 
-    if (typeof artistId !== 'undefined') {
-      if (typeof artistId !== 'string') {
-        errors.artistId = 'Field "artistId" is not provided or invalid';
-      } else {
+    if (typeof artistId !== 'string' && artistId !== null) {
+      errors.artistId = 'Field "artistId" is not provided or invalid';
+    } else {
+      if (artistId !== null) {
         const artist = this.artistService.findOne(artistId);
   
         if (!artist) {
@@ -114,9 +108,17 @@ export class AlbumController {
       });
     }
 
+    const album = this.albumService.findOne(id);
+
+    if (!album) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        error: `Album with ID=${id} is not found`,
+      });
+    }
+
     this.albumService.update(id, updateAlbumDto)
 
-    return res.status(HttpStatus.ACCEPTED).json(this.albumService.findOne(id));
+    return res.status(HttpStatus.OK).json(this.albumService.findOne(id));
   }
 
   @Delete(':id')
@@ -127,15 +129,15 @@ export class AlbumController {
       });
     }
 
-    const artist = this.artistService.findOne(id);
+    const album = this.albumService.findOne(id);
 
-    if (!artist) {
+    if (!album) {
       return res.status(HttpStatus.NOT_FOUND).json({
         error: `Album with ID=${id} is not found`,
       });
     }
 
-    this.artistService.remove(id);
+    this.albumService.remove(id);
 
     return res.status(HttpStatus.NO_CONTENT).send();
   }

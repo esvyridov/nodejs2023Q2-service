@@ -6,6 +6,10 @@ import { RouterModule } from '@nestjs/core';
 import { TrackModule } from './track/track.module';
 import { ArtistModule } from './artist/artist.module';
 import { AlbumModule } from './album/album.module';
+import { FavModule } from './fav/fav.module';
+import { FavTrackModule } from './fav-track/fav-track.module';
+import { FavAlbumModule } from './fav-album/fav-album.module';
+import { FavArtistModule } from './fav-artist/fav-artist.module';
 
 @Module({
   imports: [
@@ -26,11 +30,33 @@ import { AlbumModule } from './album/album.module';
       {
         path: 'album',
         module: AlbumModule,
+      },
+      {
+        path: 'fav',
+        module: FavModule,
+        children: [
+          {
+            path: 'track',
+            module: FavTrackModule,
+          },
+          {
+            path: 'album',
+            module: FavAlbumModule,
+          },
+          {
+            path: 'artist',
+            module: FavArtistModule
+          }
+        ]
       }
     ]),
     TrackModule,
     ArtistModule,
     AlbumModule,
+    FavModule,
+    FavTrackModule,
+    FavAlbumModule,
+    FavArtistModule,
   ],
   controllers: [AppController],
   providers: [AppService],

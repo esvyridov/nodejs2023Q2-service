@@ -4,13 +4,14 @@ import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { UUIDService } from 'src/uuid/uuid.service';
 import { Response } from 'express';
+import { DatabaseService } from 'src/database/database.service';
 
 const MIN_NAME_LENGTH = 1;
 const MAX_NAME_LENGTH = 128;
 
 @Controller()
 export class ArtistController {
-  constructor(private readonly artistService: ArtistService, private readonly uuidService: UUIDService) {}
+  constructor(private readonly artistService: ArtistService, private readonly uuidService: UUIDService, private readonly dbService: DatabaseService) {}
 
   @Post()
   create(@Body() createArtistDto: CreateArtistDto, @Res() res: Response) {
@@ -111,6 +112,18 @@ export class ArtistController {
         error: `Artist with ID=${id} is not found`,
       });
     }
+
+    this.dbService.albums.forEach((album) => {
+      if (album.artistId === id) {
+        album.artistId = null;
+      }
+    });
+
+    this.dbService.tracks.forEach((track) => {
+      if (track.artistId === id) {
+        track.artistId = null;
+      }
+    })
 
     this.artistService.remove(id);
 

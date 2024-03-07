@@ -5,13 +5,14 @@ import { UpdateAlbumDto } from './dto/update-album.dto';
 import { UUIDService } from 'src/uuid/uuid.service';
 import { Response } from 'express';
 import { ArtistService } from 'src/artist/artist.service';
+import { DatabaseService } from 'src/database/database.service';
 
 const MIN_NAME_LENGTH = 1;
 const MAX_NAME_LENGTH = 128;
 
 @Controller()
 export class AlbumController {
-  constructor(private readonly albumService: AlbumService, private readonly uuidService: UUIDService, private readonly artistService: ArtistService) {}
+  constructor(private readonly albumService: AlbumService, private readonly uuidService: UUIDService, private readonly artistService: ArtistService, private readonly dbService: DatabaseService) {}
 
   @Post()
   create(@Body() createAlbumDto: CreateAlbumDto, @Res() res: Response) {
@@ -136,6 +137,12 @@ export class AlbumController {
         error: `Album with ID=${id} is not found`,
       });
     }
+
+    this.dbService.tracks.forEach((track) => {
+      if (track.albumId === id) {
+        track.albumId = null;
+      }
+    });
 
     this.albumService.remove(id);
 

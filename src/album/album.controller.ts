@@ -144,6 +144,8 @@ export class AlbumController {
       }
     });
 
+    this.dbService.favorites.albums = this.dbService.favorites.albums.filter((album) => album.id !== id);
+
     this.albumService.remove(id);
 
     return res.status(HttpStatus.NO_CONTENT).send();

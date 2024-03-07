@@ -1,26 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { CreateFavArtistDto } from './dto/create-fav-artist.dto';
-import { UpdateFavArtistDto } from './dto/update-fav-artist.dto';
+import { Artist } from 'src/artist/entities/artist.entity';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class FavArtistService {
-  create(createFavArtistDto: CreateFavArtistDto) {
-    return 'This action adds a new favArtist';
+  constructor(private readonly dbService: DatabaseService) {}
+
+  create(artist: Artist) {
+    this.dbService.favorites.artists.push(artist);
   }
 
-  findAll() {
-    return `This action returns all favArtist`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} favArtist`;
-  }
-
-  update(id: number, updateFavArtistDto: UpdateFavArtistDto) {
-    return `This action updates a #${id} favArtist`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} favArtist`;
+  remove(id: string) {
+    this.dbService.favorites.artists = this.dbService.favorites.artists.filter((artist) => artist.id !== id);
   }
 }

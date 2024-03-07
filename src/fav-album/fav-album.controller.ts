@@ -1,18 +1,54 @@
-import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
-import { CreateFavAlbumDto } from './dto/create-fav-album.dto';
+import { Body, Controller, Delete, HttpStatus, Param, Post, Res } from '@nestjs/common';
 import { FavAlbumService } from './fav-album.service';
+import { AlbumService } from 'src/album/album.service';
+import { UUIDService } from 'src/uuid/uuid.service';
+import { Response } from 'express';
 
-@Controller('fav-album')
+@Controller()
 export class FavAlbumController {
-  constructor(private readonly favAlbumService: FavAlbumService) {}
+  constructor(private readonly favAlbumService: FavAlbumService, private readonly albumService: AlbumService, private readonly uuidService: UUIDService) {}
 
-  @Post()
-  create(@Body() createFavAlbumDto: CreateFavAlbumDto) {
-    return this.favAlbumService.create(createFavAlbumDto);
+  @Post(':id')
+  create(@Param('id') id: string, @Res() res: Response) {
+    if (!this.uuidService.validate(id)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        error: `ID=${id} is not valid UUID`,
+      });
+    }
+
+    const album = this.albumService.findOne(id);
+
+    if (!album) {
+      return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
+        error: `Album with ID=${id} is not found`,
+      });
+    }
+
+    this.favAlbumService.create(album);
+
+    return res.status(HttpStatus.CREATED).json({
+      ok: true,
+    })
   }
-  
+
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.favAlbumService.remove(+id);
+  remove(@Param('id') id: string, @Res() res: Response) {
+    if (!this.uuidService.validate(id)) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        error: `ID=${id} is not valid UUID`,
+      });
+    }
+
+    const album = this.albumService.findOne(id);
+
+    if (!album) {
+      return res.status(HttpStatus.NOT_FOUND).json({
+        error: `Album with ID=${id} is not found`,
+      });
+    }
+
+    this.favAlbumService.remove(id);
+
+    return res.status(HttpStatus.NO_CONTENT).send();
   }
 }

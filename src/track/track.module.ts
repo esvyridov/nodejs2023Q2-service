@@ -9,6 +9,7 @@ import { AlbumModule } from 'src/album/album.module';
 @Module({
   imports: [DatabaseModule, UUIDModule, ArtistModule, AlbumModule],
   controllers: [TrackController],
-  providers: [TrackService]
+  providers: [TrackService],
+  exports: [TrackService],
 })
 export class TrackModule {}

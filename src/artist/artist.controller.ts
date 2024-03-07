@@ -125,6 +125,8 @@ export class ArtistController {
       }
     })
 
+    this.dbService.favorites.artists = this.dbService.favorites.artists.filter((artist) => artist.id !== id);
+
     this.artistService.remove(id);
 
     return res.status(HttpStatus.NO_CONTENT).send();

@@ -1,26 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { CreateFavAlbumDto } from './dto/create-fav-album.dto';
-import { UpdateFavAlbumDto } from './dto/update-fav-album.dto';
+import { Album } from 'src/album/entities/album.entity';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class FavAlbumService {
-  create(createFavAlbumDto: CreateFavAlbumDto) {
-    return 'This action adds a new favAlbum';
+  constructor(private readonly dbService: DatabaseService) {}
+
+  create(album: Album) {
+    this.dbService.favorites.albums.push(album);
   }
 
-  findAll() {
-    return `This action returns all favAlbum`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} favAlbum`;
-  }
-
-  update(id: number, updateFavAlbumDto: UpdateFavAlbumDto) {
-    return `This action updates a #${id} favAlbum`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} favAlbum`;
+  remove(id: string) {
+    this.dbService.favorites.albums = this.dbService.favorites.albums.filter((album) => album.id !== id);
   }
 }

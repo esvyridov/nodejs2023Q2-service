@@ -6,13 +6,14 @@ import { UUIDService } from 'src/uuid/uuid.service';
 import { Response } from 'express';
 import { ArtistService } from 'src/artist/artist.service';
 import { AlbumService } from 'src/album/album.service';
+import { DatabaseService } from 'src/database/database.service';
 
 const MIN_NAME_LENGTH = 1;
 const MAX_NAME_LENGTH = 128;
 
 @Controller()
 export class TrackController {
-  constructor(private readonly trackService: TrackService, private readonly uuidService: UUIDService, private readonly artistService: ArtistService, private readonly albumService: AlbumService) {}
+  constructor(private readonly trackService: TrackService, private readonly uuidService: UUIDService, private readonly artistService: ArtistService, private readonly albumService: AlbumService, private readonly dbService: DatabaseService) {}
 
   @Post()
   create(@Body() createTrackDto: CreateTrackDto, @Res() res: Response) {
@@ -161,6 +162,8 @@ export class TrackController {
         error: `Track with ID=${id} is not found`,
       });
     }
+
+    this.dbService.favorites.tracks = this.dbService.favorites.tracks.filter((track) => track.id !== id);
 
     this.trackService.remove(id);
 

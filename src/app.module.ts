@@ -32,7 +32,7 @@ import { FavArtistModule } from './fav-artist/fav-artist.module';
         module: AlbumModule,
       },
       {
-        path: 'fav',
+        path: 'favs',
         module: FavModule,
         children: [
           {

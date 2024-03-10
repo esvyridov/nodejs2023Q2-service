@@ -10,9 +10,11 @@ import { FavModule } from './fav/fav.module';
 import { FavTrackModule } from './fav-track/fav-track.module';
 import { FavAlbumModule } from './fav-album/fav-album.module';
 import { FavArtistModule } from './fav-artist/fav-artist.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     UserModule,
     RouterModule.register([
       {

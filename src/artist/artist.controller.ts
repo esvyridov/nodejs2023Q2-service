@@ -1,24 +1,42 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, Res, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Res,
+} from '@nestjs/common';
+import { Response } from 'express';
+import { DatabaseService } from 'src/database/database.service';
+import { UUIDService } from 'src/uuid/uuid.service';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { UUIDService } from 'src/uuid/uuid.service';
-import { Response } from 'express';
-import { DatabaseService } from 'src/database/database.service';
 
 const MIN_NAME_LENGTH = 1;
 const MAX_NAME_LENGTH = 128;
 
 @Controller()
 export class ArtistController {
-  constructor(private readonly artistService: ArtistService, private readonly uuidService: UUIDService, private readonly dbService: DatabaseService) {}
+  constructor(
+    private readonly artistService: ArtistService,
+    private readonly uuidService: UUIDService,
+    private readonly dbService: DatabaseService,
+  ) {}
 
   @Post()
   create(@Body() createArtistDto: CreateArtistDto, @Res() res: Response) {
     const { name, grammy } = createArtistDto;
     const errors: Partial<Record<keyof CreateArtistDto, string>> = {};
 
-    if (typeof name !== 'string' || name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH) {
+    if (
+      typeof name !== 'string' ||
+      name.length < MIN_NAME_LENGTH ||
+      name.length > MAX_NAME_LENGTH
+    ) {
       errors.name = 'Field "name" is not provided or invalid';
     }
 
@@ -28,11 +46,13 @@ export class ArtistController {
 
     if (Object.keys(errors).length !== 0) {
       return res.status(HttpStatus.BAD_REQUEST).json({
-        errors
+        errors,
       });
     }
 
-    return res.status(HttpStatus.CREATED).json(this.artistService.create(createArtistDto));
+    return res
+      .status(HttpStatus.CREATED)
+      .json(this.artistService.create(createArtistDto));
   }
 
   @Get()
@@ -60,17 +80,25 @@ export class ArtistController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateArtistDto: UpdateArtistDto, @Res() res: Response) {
+  update(
+    @Param('id') id: string,
+    @Body() updateArtistDto: UpdateArtistDto,
+    @Res() res: Response,
+  ) {
     if (!this.uuidService.validate(id)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         error: `ID=${id} is not valid UUID`,
       });
     }
-    
+
     const { name, grammy } = updateArtistDto;
     const errors: Partial<Record<keyof UpdateArtistDto, string>> = {};
 
-    if (typeof name !== 'string' || name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH) {
+    if (
+      typeof name !== 'string' ||
+      name.length < MIN_NAME_LENGTH ||
+      name.length > MAX_NAME_LENGTH
+    ) {
       errors.name = 'Field "name" is invalid';
     }
 
@@ -80,7 +108,7 @@ export class ArtistController {
 
     if (Object.keys(errors).length !== 0) {
       return res.status(HttpStatus.BAD_REQUEST).json({
-        errors
+        errors,
       });
     }
 
@@ -92,7 +120,7 @@ export class ArtistController {
       });
     }
 
-    this.artistService.update(id, updateArtistDto)
+    this.artistService.update(id, updateArtistDto);
 
     return res.status(HttpStatus.OK).json(this.artistService.findOne(id));
   }
@@ -123,9 +151,11 @@ export class ArtistController {
       if (track.artistId === id) {
         track.artistId = null;
       }
-    })
+    });
 
-    this.dbService.favorites.artists = this.dbService.favorites.artists.filter((artist) => artist.id !== id);
+    this.dbService.favorites.artists = this.dbService.favorites.artists.filter(
+      (artist) => artist.id !== id,
+    );
 
     this.artistService.remove(id);
 

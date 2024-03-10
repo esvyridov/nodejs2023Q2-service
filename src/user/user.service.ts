@@ -7,15 +7,18 @@ import { UUIDService } from 'src/uuid/uuid.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly dbService: DatabaseService, private readonly uuidService: UUIDService) {}
-  
-  create({ login, password}: CreateUserDto): User {
+  constructor(
+    private readonly dbService: DatabaseService,
+    private readonly uuidService: UUIDService,
+  ) {}
+
+  create({ login, password }: CreateUserDto): User {
     const timestamp = new Date().valueOf();
     const user: User = {
       id: this.uuidService.generate(),
       login,
       password,
-      version: 1, 
+      version: 1,
       createdAt: timestamp,
       updatedAt: timestamp,
     };
@@ -42,14 +45,16 @@ export class UserService {
           version: user.version + 1,
           password: newPassword,
           updatedAt: timestamp,
-        }
+        };
       }
-      
+
       return user;
     });
   }
 
   remove(id: string): void {
-    this.dbService.users = this.dbService.users.filter((user) => user.id !== id);
+    this.dbService.users = this.dbService.users.filter(
+      (user) => user.id !== id,
+    );
   }
 }

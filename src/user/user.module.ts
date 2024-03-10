@@ -7,6 +7,6 @@ import { UUIDModule } from 'src/uuid/uuid.module';
 @Module({
   imports: [DatabaseModule, UUIDModule],
   controllers: [UserController],
-  providers: [UserService]
+  providers: [UserService],
 })
 export class UserModule {}

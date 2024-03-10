@@ -3,6 +3,6 @@ import { UUIDService } from './uuid.service';
 
 @Module({
   providers: [UUIDService],
-  exports: [UUIDService]
+  exports: [UUIDService],
 })
 export class UUIDModule {}

@@ -8,6 +8,6 @@ import { TrackModule } from 'src/track/track.module';
 @Module({
   imports: [DatabaseModule, UUIDModule, TrackModule],
   controllers: [FavTrackController],
-  providers: [FavTrackService]
+  providers: [FavTrackService],
 })
 export class FavTrackModule {}

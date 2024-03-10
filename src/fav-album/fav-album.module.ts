@@ -8,6 +8,6 @@ import { AlbumModule } from 'src/album/album.module';
 @Module({
   imports: [DatabaseModule, UUIDModule, AlbumModule],
   controllers: [FavAlbumController],
-  providers: [FavAlbumService]
+  providers: [FavAlbumService],
 })
 export class FavAlbumModule {}

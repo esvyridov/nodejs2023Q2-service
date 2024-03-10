@@ -11,6 +11,8 @@ export class FavAlbumService {
   }
 
   remove(id: string) {
-    this.dbService.favorites.albums = this.dbService.favorites.albums.filter((album) => album.id !== id);
+    this.dbService.favorites.albums = this.dbService.favorites.albums.filter(
+      (album) => album.id !== id,
+    );
   }
 }

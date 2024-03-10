@@ -11,6 +11,8 @@ export class FavTrackService {
   }
 
   remove(id: string) {
-    this.dbService.favorites.tracks = this.dbService.favorites.tracks.filter((track) => track.id !== id);
+    this.dbService.favorites.tracks = this.dbService.favorites.tracks.filter(
+      (track) => track.id !== id,
+    );
   }
 }

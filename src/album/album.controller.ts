@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Param, Delete, HttpStatus, Res, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  HttpStatus,
+  Res,
+  Put,
+} from '@nestjs/common';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
@@ -12,14 +22,23 @@ const MAX_NAME_LENGTH = 128;
 
 @Controller()
 export class AlbumController {
-  constructor(private readonly albumService: AlbumService, private readonly uuidService: UUIDService, private readonly artistService: ArtistService, private readonly dbService: DatabaseService) {}
+  constructor(
+    private readonly albumService: AlbumService,
+    private readonly uuidService: UUIDService,
+    private readonly artistService: ArtistService,
+    private readonly dbService: DatabaseService,
+  ) {}
 
   @Post()
   create(@Body() createAlbumDto: CreateAlbumDto, @Res() res: Response) {
     const { name, year, artistId } = createAlbumDto;
     const errors: Partial<Record<keyof CreateAlbumDto, string>> = {};
 
-    if (typeof name !== 'string' || name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH) {
+    if (
+      typeof name !== 'string' ||
+      name.length < MIN_NAME_LENGTH ||
+      name.length > MAX_NAME_LENGTH
+    ) {
       errors.name = 'Field "name" is not provided or invalid';
     }
 
@@ -32,7 +51,7 @@ export class AlbumController {
     } else {
       if (artistId !== null) {
         const artist = this.artistService.findOne(artistId);
-  
+
         if (!artist) {
           errors.artistId = `Artist with ID=${artistId} is not found`;
         }
@@ -41,11 +60,13 @@ export class AlbumController {
 
     if (Object.keys(errors).length !== 0) {
       return res.status(HttpStatus.BAD_REQUEST).json({
-        errors
+        errors,
       });
     }
 
-    return res.status(HttpStatus.CREATED).json(this.albumService.create(createAlbumDto));
+    return res
+      .status(HttpStatus.CREATED)
+      .json(this.albumService.create(createAlbumDto));
   }
 
   @Get()
@@ -73,7 +94,11 @@ export class AlbumController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateAlbumDto: UpdateAlbumDto, @Res() res: Response) {
+  update(
+    @Param('id') id: string,
+    @Body() updateAlbumDto: UpdateAlbumDto,
+    @Res() res: Response,
+  ) {
     if (!this.uuidService.validate(id)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         error: `ID=${id} is not valid UUID`,
@@ -83,7 +108,11 @@ export class AlbumController {
     const { name, year, artistId } = updateAlbumDto;
     const errors: Partial<Record<keyof UpdateAlbumDto, string>> = {};
 
-    if (typeof name !== 'string' || name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH) {
+    if (
+      typeof name !== 'string' ||
+      name.length < MIN_NAME_LENGTH ||
+      name.length > MAX_NAME_LENGTH
+    ) {
       errors.name = 'Field "name" is not provided or invalid';
     }
 
@@ -96,7 +125,7 @@ export class AlbumController {
     } else {
       if (artistId !== null) {
         const artist = this.artistService.findOne(artistId);
-  
+
         if (!artist) {
           errors.artistId = `Artist with ID=${artistId} is not found`;
         }
@@ -105,7 +134,7 @@ export class AlbumController {
 
     if (Object.keys(errors).length !== 0) {
       return res.status(HttpStatus.BAD_REQUEST).json({
-        errors
+        errors,
       });
     }
 
@@ -117,7 +146,7 @@ export class AlbumController {
       });
     }
 
-    this.albumService.update(id, updateAlbumDto)
+    this.albumService.update(id, updateAlbumDto);
 
     return res.status(HttpStatus.OK).json(this.albumService.findOne(id));
   }
@@ -144,7 +173,9 @@ export class AlbumController {
       }
     });
 
-    this.dbService.favorites.albums = this.dbService.favorites.albums.filter((album) => album.id !== id);
+    this.dbService.favorites.albums = this.dbService.favorites.albums.filter(
+      (album) => album.id !== id,
+    );
 
     this.albumService.remove(id);
 

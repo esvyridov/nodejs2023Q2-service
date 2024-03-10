@@ -1,12 +1,23 @@
-import { Body, Controller, Delete, HttpStatus, Param, Post, Res } from '@nestjs/common';
-import { FavArtistService } from './fav-artist.service';
+import {
+  Controller,
+  Delete,
+  HttpStatus,
+  Param,
+  Post,
+  Res,
+} from '@nestjs/common';
+import { Response } from 'express';
 import { ArtistService } from 'src/artist/artist.service';
 import { UUIDService } from 'src/uuid/uuid.service';
-import { Response } from 'express';
+import { FavArtistService } from './fav-artist.service';
 
 @Controller()
 export class FavArtistController {
-  constructor(private readonly favArtistService: FavArtistService, private readonly artistService: ArtistService, private readonly uuidService: UUIDService) {}
+  constructor(
+    private readonly favArtistService: FavArtistService,
+    private readonly artistService: ArtistService,
+    private readonly uuidService: UUIDService,
+  ) {}
 
   @Post(':id')
   create(@Param('id') id: string, @Res() res: Response) {
@@ -28,7 +39,7 @@ export class FavArtistController {
 
     return res.status(HttpStatus.CREATED).json({
       ok: true,
-    })
+    });
   }
 
   @Delete(':id')

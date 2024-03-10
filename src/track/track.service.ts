@@ -7,7 +7,10 @@ import { Track } from './entities/track.entity';
 
 @Injectable()
 export class TrackService {
-  constructor(private readonly dbService: DatabaseService, private readonly uuidService: UUIDService) {}
+  constructor(
+    private readonly dbService: DatabaseService,
+    private readonly uuidService: UUIDService,
+  ) {}
 
   create({ name, artistId, albumId, duration }: CreateTrackDto): Track {
     const track: Track = {
@@ -31,7 +34,10 @@ export class TrackService {
     return this.dbService.tracks.find((track) => track.id === id);
   }
 
-  update(id: string, { name, artistId, albumId, duration }: UpdateTrackDto): void {
+  update(
+    id: string,
+    { name, artistId, albumId, duration }: UpdateTrackDto,
+  ): void {
     this.dbService.tracks = this.dbService.tracks.map((track) => {
       if (track.id === id) {
         return {
@@ -40,14 +46,16 @@ export class TrackService {
           artistId,
           albumId,
           duration,
-        }
+        };
       }
-      
+
       return track;
     });
   }
 
   remove(id: string): void {
-    this.dbService.tracks = this.dbService.tracks.filter((track) => track.id !== id);
+    this.dbService.tracks = this.dbService.tracks.filter(
+      (track) => track.id !== id,
+    );
   }
 }

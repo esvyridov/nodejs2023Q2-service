@@ -7,7 +7,10 @@ import { Album } from './entities/album.entity';
 
 @Injectable()
 export class AlbumService {
-  constructor(private readonly dbService: DatabaseService, private readonly uuidService: UUIDService) {}
+  constructor(
+    private readonly dbService: DatabaseService,
+    private readonly uuidService: UUIDService,
+  ) {}
 
   create({ name, year, artistId }: CreateAlbumDto): Album {
     const album = {
@@ -38,14 +41,16 @@ export class AlbumService {
           name,
           year,
           artistId,
-        }
+        };
       }
-      
+
       return album;
     });
   }
 
   remove(id: string): void {
-    this.dbService.albums = this.dbService.albums.filter((album) => album.id !== id);
+    this.dbService.albums = this.dbService.albums.filter(
+      (album) => album.id !== id,
+    );
   }
 }

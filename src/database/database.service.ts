@@ -6,17 +6,17 @@ import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class DatabaseService {
-    users: User[] = [];
-    tracks: Track[] = [];
-    artists: Artist[] = [];
-    albums: Album[] = [];
-    favorites: {
-        artists: Artist[];
-        albums: Album[];
-        tracks: Track[];
-    } = {
-        artists: [],
-        albums: [],
-        tracks: [],
-    }
+  users: User[] = [];
+  tracks: Track[] = [];
+  artists: Artist[] = [];
+  albums: Album[] = [];
+  favorites: {
+    artists: Artist[];
+    albums: Album[];
+    tracks: Track[];
+  } = {
+    artists: [],
+    albums: [],
+    tracks: [],
+  };
 }

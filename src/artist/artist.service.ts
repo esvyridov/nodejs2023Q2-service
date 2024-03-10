@@ -7,13 +7,16 @@ import { Artist } from './entities/artist.entity';
 
 @Injectable()
 export class ArtistService {
-  constructor(private readonly dbService: DatabaseService, private readonly uuidService: UUIDService) {}
+  constructor(
+    private readonly dbService: DatabaseService,
+    private readonly uuidService: UUIDService,
+  ) {}
 
   create({ name, grammy }: CreateArtistDto): Artist {
     const artist: Artist = {
       id: this.uuidService.generate(),
       name,
-      grammy
+      grammy,
     };
 
     this.dbService.artists.push(artist);
@@ -36,14 +39,16 @@ export class ArtistService {
           ...artist,
           name,
           grammy,
-        }
+        };
       }
-      
+
       return artist;
     });
   }
 
   remove(id: string): void {
-    this.dbService.artists = this.dbService.artists.filter((artist) => artist.id !== id);
+    this.dbService.artists = this.dbService.artists.filter(
+      (artist) => artist.id !== id,
+    );
   }
 }

@@ -1,4 +1,11 @@
-import { Controller, Delete, HttpStatus, Param, Post, Res } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  HttpStatus,
+  Param,
+  Post,
+  Res,
+} from '@nestjs/common';
 import { FavTrackService } from './fav-track.service';
 import { UUIDService } from 'src/uuid/uuid.service';
 import { Response } from 'express';
@@ -6,7 +13,11 @@ import { TrackService } from 'src/track/track.service';
 
 @Controller()
 export class FavTrackController {
-  constructor(private readonly favTrackService: FavTrackService, private readonly trackService: TrackService, private readonly uuidService: UUIDService) {}
+  constructor(
+    private readonly favTrackService: FavTrackService,
+    private readonly trackService: TrackService,
+    private readonly uuidService: UUIDService,
+  ) {}
 
   @Post(':id')
   create(@Param('id') id: string, @Res() res: Response) {
@@ -28,7 +39,7 @@ export class FavTrackController {
 
     return res.status(HttpStatus.CREATED).json({
       ok: true,
-    })
+    });
   }
 
   @Delete(':id')

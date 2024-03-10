@@ -47,10 +47,10 @@ import { ConfigModule } from '@nestjs/config';
           },
           {
             path: 'artist',
-            module: FavArtistModule
-          }
-        ]
-      }
+            module: FavArtistModule,
+          },
+        ],
+      },
     ]),
     TrackModule,
     ArtistModule,

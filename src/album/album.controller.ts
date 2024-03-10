@@ -16,10 +16,12 @@ import { UUIDService } from 'src/uuid/uuid.service';
 import { Response } from 'express';
 import { ArtistService } from 'src/artist/artist.service';
 import { DatabaseService } from 'src/database/database.service';
+import { ApiTags } from '@nestjs/swagger';
 
 const MIN_NAME_LENGTH = 1;
 const MAX_NAME_LENGTH = 128;
 
+@ApiTags('Album')
 @Controller()
 export class AlbumController {
   constructor(

@@ -15,6 +15,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
 import { UserService } from './user.service';
+import { ApiTags } from '@nestjs/swagger';
 
 const MIN_LOGIN_LENGTH = 1;
 const MAX_LOGIN_LENGTH = 128;
@@ -29,6 +30,7 @@ const filterPasswordOut = (user: User): Omit<User, 'password'> => {
   return userCopy;
 };
 
+@ApiTags('User')
 @Controller()
 export class UserController {
   constructor(

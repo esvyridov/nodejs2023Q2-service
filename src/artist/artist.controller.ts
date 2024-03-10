@@ -15,10 +15,12 @@ import { UUIDService } from 'src/uuid/uuid.service';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 const MIN_NAME_LENGTH = 1;
 const MAX_NAME_LENGTH = 128;
 
+@ApiTags('Artist')
 @Controller()
 export class ArtistController {
   constructor(

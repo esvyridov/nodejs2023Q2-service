@@ -10,7 +10,9 @@ import { FavTrackService } from './fav-track.service';
 import { UUIDService } from 'src/uuid/uuid.service';
 import { Response } from 'express';
 import { TrackService } from 'src/track/track.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Favorite Tracks')
 @Controller()
 export class FavTrackController {
   constructor(

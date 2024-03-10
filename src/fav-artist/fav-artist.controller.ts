@@ -10,7 +10,9 @@ import { Response } from 'express';
 import { ArtistService } from 'src/artist/artist.service';
 import { UUIDService } from 'src/uuid/uuid.service';
 import { FavArtistService } from './fav-artist.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Favorite Artists')
 @Controller()
 export class FavArtistController {
   constructor(

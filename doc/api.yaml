@@ -5,125 +5,11 @@ info:
   version: 1.0.0
 
 servers:
-  - url: '{protocol}://{environment}:{port}'
-    variables:
-      protocol:
-        enum:
-          - http
-          - https
-        default: http
-      environment:
-        default: localhost
-        enum:
-          - localhost
-      port:
-        default: 4000
+  - url: 'http://localhost:4000'
 
-components:
-  schemas:
-    User:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        login:
-          type: string
-          example: 'TestUser'
-        version:
-          type: number
-          example: 1
-        createdAt:
-          type: number
-          example: 1655000000
-        updatedAt:
-          type: number
-          example: 1655000000
-      required:
-        - id
-        - login
-        - version
-        - createdAt
-        - updatedAt
-    Artist:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-          example: 'Freddie Mercury'
-        grammy:
-          type: boolean
-          example: false
-      required:
-        - id
-        - name
-        - grammy
-    Album:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-          example: 'Innuendo'
-        year:
-          type: integer
-          example: 1991
-        artistId:
-          type: string
-          format: uuid
-          nullable: true
-      required:
-        - id
-        - name
-        - year
-        - artistId
-    Track:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-          example: The Show Must Go On
-        artistId:
-          type: string
-          format: uuid
-          nullable: true
-        albumId:
-          type: string
-          format: uuid
-          nullable: true
-        duration:
-          type: integer
-          description: In seconds
-          example: 262
-      required:
-        - id
-        - name
-        - artistId
-        - albumId
-        - duration
-    Favorites:
-      type: object
-      properties:
-        artists:
-          type: array
-          items:
-            $ref: '#/components/schemas/Artist'
-        albums:
-          type: array
-          items:
-            $ref: '#/components/schemas/Album'
-        tracks:
-          type: array
-          items:
-            $ref: '#/components/schemas/Track'
+tags:
+  - name: Users
+    description: Operations related to user management
 
 paths:
   /user:
@@ -746,3 +632,109 @@ paths:
           description: Bad request. artistId is invalid (not uuid)
         404:
           description: Artist was not found.
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        login:
+          type: string
+          example: 'TestUser'
+        version:
+          type: number
+          example: 1
+        createdAt:
+          type: number
+          example: 1655000000
+        updatedAt:
+          type: number
+          example: 1655000000
+      required:
+        - id
+        - login
+        - version
+        - createdAt
+        - updatedAt
+    Artist:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: 'Freddie Mercury'
+        grammy:
+          type: boolean
+          example: false
+      required:
+        - id
+        - name
+        - grammy
+    Album:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: 'Innuendo'
+        year:
+          type: integer
+          example: 1991
+        artistId:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+        - id
+        - name
+        - year
+        - artistId
+    Track:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: The Show Must Go On
+        artistId:
+          type: string
+          format: uuid
+          nullable: true
+        albumId:
+          type: string
+          format: uuid
+          nullable: true
+        duration:
+          type: integer
+          description: In seconds
+          example: 262
+      required:
+        - id
+        - name
+        - artistId
+        - albumId
+        - duration
+    Favorites:
+      type: object
+      properties:
+        artists:
+          type: array
+          items:
+            $ref: '#/components/schemas/Artist'
+        albums:
+          type: array
+          items:
+            $ref: '#/components/schemas/Album'
+        tracks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Track'

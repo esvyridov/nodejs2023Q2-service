@@ -10,7 +10,9 @@ import { Response } from 'express';
 import { AlbumService } from 'src/album/album.service';
 import { UUIDService } from 'src/uuid/uuid.service';
 import { FavAlbumService } from './fav-album.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Favorite Albums')
 @Controller()
 export class FavAlbumController {
   constructor(

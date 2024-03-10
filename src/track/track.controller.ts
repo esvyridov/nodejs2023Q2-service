@@ -17,10 +17,12 @@ import { UUIDService } from 'src/uuid/uuid.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { TrackService } from './track.service';
+import { ApiTags } from '@nestjs/swagger';
 
 const MIN_NAME_LENGTH = 1;
 const MAX_NAME_LENGTH = 128;
 
+@ApiTags('Track')
 @Controller()
 export class TrackController {
   constructor(

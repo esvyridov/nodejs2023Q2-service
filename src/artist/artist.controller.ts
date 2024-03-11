@@ -156,7 +156,7 @@ export class ArtistController {
     });
 
     this.dbService.favorites.artists = this.dbService.favorites.artists.filter(
-      (artist) => artist.id !== id,
+      (artistId) => artistId !== id,
     );
 
     this.artistService.remove(id);

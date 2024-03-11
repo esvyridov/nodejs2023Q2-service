@@ -196,7 +196,7 @@ export class TrackController {
     }
 
     this.dbService.favorites.tracks = this.dbService.favorites.tracks.filter(
-      (track) => track.id !== id,
+      (trackId) => trackId !== id,
     );
 
     this.trackService.remove(id);

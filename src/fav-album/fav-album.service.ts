@@ -7,12 +7,12 @@ export class FavAlbumService {
   constructor(private readonly dbService: DatabaseService) {}
 
   create(album: Album) {
-    this.dbService.favorites.albums.push(album);
+    this.dbService.favorites.albums.push(album.id);
   }
 
-  remove(id: string) {
+  remove(idToRemove: string) {
     this.dbService.favorites.albums = this.dbService.favorites.albums.filter(
-      (album) => album.id !== id,
+      (albumId) => albumId !== idToRemove,
     );
   }
 }

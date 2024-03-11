@@ -11,9 +11,9 @@ export class DatabaseService {
   artists: Artist[] = [];
   albums: Album[] = [];
   favorites: {
-    artists: Artist[];
-    albums: Album[];
-    tracks: Track[];
+    artists: string[];
+    albums: string[];
+    tracks: string[];
   } = {
     artists: [],
     albums: [],

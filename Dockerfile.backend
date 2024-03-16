@@ -1,0 +1,17 @@
+FROM node:lts-alpine
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN apk add .gyp python3 make g++ node-gyp
+
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+EXPOSE 4000
+
+CMD ["npm", "run", "start:prod"]

@@ -9,10 +9,12 @@ import { FavTrackModule } from './fav-track/fav-track.module';
 import { FavAlbumModule } from './fav-album/fav-album.module';
 import { FavArtistModule } from './fav-artist/fav-artist.module';
 import { ConfigModule } from '@nestjs/config';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    PrismaModule,
     UserModule,
     RouterModule.register([
       {

@@ -23,21 +23,21 @@ export class FavArtistController {
 
   @Post(':id')
   create(@Param('id') id: string, @Res() res: Response) {
-    if (!this.uuidService.validate(id)) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        error: `ID=${id} is not valid UUID`,
-      });
-    }
+    // if (!this.uuidService.validate(id)) {
+    //   return res.status(HttpStatus.BAD_REQUEST).json({
+    //     error: `ID=${id} is not valid UUID`,
+    //   });
+    // }
 
-    const artist = this.artistService.findOne(id);
+    // const artist = this.artistService.findOne(id);
 
-    if (!artist) {
-      return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
-        error: `Artist with ID=${id} is not found`,
-      });
-    }
+    // if (!artist) {
+    //   return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
+    //     error: `Artist with ID=${id} is not found`,
+    //   });
+    // }
 
-    this.favArtistService.create(artist);
+    // this.favArtistService.create(artist);
 
     return res.status(HttpStatus.CREATED).json({
       ok: true,
@@ -46,21 +46,21 @@ export class FavArtistController {
 
   @Delete(':id')
   remove(@Param('id') id: string, @Res() res: Response) {
-    if (!this.uuidService.validate(id)) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        error: `ID=${id} is not valid UUID`,
-      });
-    }
+    // if (!this.uuidService.validate(id)) {
+    //   return res.status(HttpStatus.BAD_REQUEST).json({
+    //     error: `ID=${id} is not valid UUID`,
+    //   });
+    // }
 
-    const artist = this.artistService.findOne(id);
+    // const artist = this.artistService.findOne(id);
 
-    if (!artist) {
-      return res.status(HttpStatus.NOT_FOUND).json({
-        error: `Artist with ID=${id} is not found`,
-      });
-    }
+    // if (!artist) {
+    //   return res.status(HttpStatus.NOT_FOUND).json({
+    //     error: `Artist with ID=${id} is not found`,
+    //   });
+    // }
 
-    this.favArtistService.remove(id);
+    // this.favArtistService.remove(id);
 
     return res.status(HttpStatus.NO_CONTENT).send();
   }

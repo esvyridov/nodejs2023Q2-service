@@ -149,11 +149,9 @@ export class UserController {
       });
     }
 
-    const updatedUser = await this.userService.update(id, updatePasswordDto);
-
     return res
       .status(HttpStatus.OK)
-      .json(formatUser(updatedUser));
+      .json(formatUser(await this.userService.update(id, updatePasswordDto)));
   }
 
   @Delete(':id')

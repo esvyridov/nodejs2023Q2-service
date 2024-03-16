@@ -10,7 +10,7 @@ export class UserService {
     private readonly prismaService: PrismaService,
   ) {}
 
-  async create({ login, password }: CreateUserDto): Promise<User> {
+  create({ login, password }: CreateUserDto): Promise<User> {
     return this.prismaService.user.create({
       data: {
         login,

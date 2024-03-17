@@ -15,6 +15,7 @@ import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 const MIN_NAME_LENGTH = 1;
 const MAX_NAME_LENGTH = 128;
@@ -24,6 +25,7 @@ const MAX_NAME_LENGTH = 128;
 export class ArtistController {
   constructor(
     private readonly artistService: ArtistService,
+    private readonly prismaService: PrismaService,
     private readonly uuidService: UUIDService,
   ) {}
 
@@ -139,21 +141,11 @@ export class ArtistController {
       });
     }
 
-    // this.dbService.albums.forEach((album) => {
-    //   if (album.artistId === id) {
-    //     album.artistId = null;
-    //   }
-    // });
-
-    // this.dbService.tracks.forEach((track) => {
-    //   if (track.artistId === id) {
-    //     track.artistId = null;
-    //   }
-    // });
-
-    // this.dbService.favorites.artists = this.dbService.favorites.artists.filter(
-    //   (artistId) => artistId !== id,
-    // );
+    await this.prismaService.favoriteArtist.deleteMany({
+      where: {
+        artistId: id
+      }
+    });
 
     await this.artistService.remove(id);
 

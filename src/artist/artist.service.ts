@@ -10,7 +10,7 @@ export class ArtistService {
     private readonly prismaService: PrismaService,
   ) {}
 
-  async create({ name, grammy }: CreateArtistDto): Promise<Artist> {
+  create({ name, grammy }: CreateArtistDto): Promise<Artist> {
     return this.prismaService.artist.create({
       data: {
         name,

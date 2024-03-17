@@ -12,12 +12,12 @@ import {
 import { Response } from 'express';
 import { AlbumService } from 'src/album/album.service';
 import { ArtistService } from 'src/artist/artist.service';
-import { DatabaseService } from 'src/database/database.service';
 import { UUIDService } from 'src/uuid/uuid.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { TrackService } from './track.service';
 import { ApiTags } from '@nestjs/swagger';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 const MIN_NAME_LENGTH = 1;
 const MAX_NAME_LENGTH = 128;
@@ -26,15 +26,15 @@ const MAX_NAME_LENGTH = 128;
 @Controller()
 export class TrackController {
   constructor(
+    private readonly prismaService: PrismaService,
     private readonly trackService: TrackService,
     private readonly uuidService: UUIDService,
     private readonly artistService: ArtistService,
     private readonly albumService: AlbumService,
-    private readonly dbService: DatabaseService,
   ) {}
 
   @Post()
-  create(@Body() createTrackDto: CreateTrackDto, @Res() res: Response) {
+  async create(@Body() createTrackDto: CreateTrackDto, @Res() res: Response) {
     const { name, artistId, albumId, duration } = createTrackDto;
     const errors: Partial<Record<keyof CreateTrackDto, string>> = {};
 
@@ -50,7 +50,7 @@ export class TrackController {
       errors.artistId = 'Field "artistId" is invalid';
     } else {
       if (artistId !== null) {
-        const artist = this.artistService.findOne(artistId);
+        const artist = await this.artistService.findOne(artistId);
 
         if (!artist) {
           errors.artistId = `Artist with ID=${artistId} is not found`;
@@ -62,7 +62,7 @@ export class TrackController {
       errors.albumId = 'Field "albumId" is invalid';
     } else {
       if (albumId !== null) {
-        const album = this.albumService.findOne(albumId);
+        const album = await this.albumService.findOne(albumId);
 
         if (!album) {
           errors.albumId = `Album with ID=${albumId} is not found`;
@@ -82,23 +82,23 @@ export class TrackController {
 
     return res
       .status(HttpStatus.CREATED)
-      .json(this.trackService.create(createTrackDto));
+      .json(await this.trackService.create(createTrackDto));
   }
 
   @Get()
-  findAll() {
-    return this.trackService.findAll();
+  async findAll() {
+    return await this.trackService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Res() res: Response) {
+  async findOne(@Param('id') id: string, @Res() res: Response) {
     if (!this.uuidService.validate(id)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         error: `ID=${id} is not valid UUID`,
       });
     }
 
-    const track = this.trackService.findOne(id);
+    const track = await this.trackService.findOne(id);
 
     if (!track) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -110,7 +110,7 @@ export class TrackController {
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateTrackDto: UpdateTrackDto,
     @Res() res: Response,
@@ -136,7 +136,7 @@ export class TrackController {
       errors.artistId = 'Field "artistId" is invalid';
     } else {
       if (artistId !== null) {
-        const artist = this.artistService.findOne(artistId);
+        const artist = await this.artistService.findOne(artistId);
 
         if (!artist) {
           errors.artistId = `Artist with ID=${artistId} is not found`;
@@ -148,7 +148,7 @@ export class TrackController {
       errors.albumId = 'Field "albumId" is invalid';
     } else {
       if (albumId !== null) {
-        const album = this.albumService.findOne(albumId);
+        const album = await this.albumService.findOne(albumId);
 
         if (!album) {
           errors.albumId = `Album with ID=${albumId} is not found`;
@@ -166,7 +166,7 @@ export class TrackController {
       });
     }
 
-    const track = this.trackService.findOne(id);
+    const track = await this.trackService.findOne(id);
 
     if (!track) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -174,20 +174,18 @@ export class TrackController {
       });
     }
 
-    this.trackService.update(id, updateTrackDto);
-
-    return res.status(HttpStatus.OK).json(this.trackService.findOne(id));
+    return res.status(HttpStatus.OK).json(await this.trackService.update(id, updateTrackDto));
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @Res() res: Response) {
+  async remove(@Param('id') id: string, @Res() res: Response) {
     if (!this.uuidService.validate(id)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         error: `ID=${id} is not valid UUID`,
       });
     }
 
-    const track = this.trackService.findOne(id);
+    const track = await this.trackService.findOne(id);
 
     if (!track) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -195,11 +193,13 @@ export class TrackController {
       });
     }
 
-    this.dbService.favorites.tracks = this.dbService.favorites.tracks.filter(
-      (trackId) => trackId !== id,
-    );
+    await this.prismaService.favoriteTrack.deleteMany({
+      where: {
+        trackId: id
+      }
+    });
 
-    this.trackService.remove(id);
+    await this.trackService.remove(id);
 
     return res.status(HttpStatus.NO_CONTENT).send();
   }

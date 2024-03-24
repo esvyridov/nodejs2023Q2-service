@@ -7,19 +7,15 @@ COPY package.json package-lock.json ./
 COPY . .
 
 RUN apk add --no-cache --virtual .gyp python3 make g++ \
-    && npm install \
-    && apk del .gyp python3 make g++ \
-    && npm cache clean --force
-
-RUN npm run build
+    && npm install
 
 FROM node:lts-alpine 
 
 WORKDIR /usr/src/app
 
-COPY --from=development /usr/src/app/dist ./dist
 COPY --from=development /usr/src/app/node_modules ./node_modules
+COPY . .
 
 EXPOSE 4000
 
-CMD ["node", "dist/main.js"]
+CMD ["npm", "run", "start:dev"]

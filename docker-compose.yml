@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile.backend
     ports:
-      - "${PORT}:4000"
+      - "${PORT}:${PORT}"
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
@@ -34,7 +34,7 @@ services:
       context: .
       dockerfile: Dockerfile.database
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:${DB_PORT}"
     volumes:
       - postgres_artifacts:/var/lib/postgresql/data
     env_file:

@@ -9,17 +9,17 @@ export class FavService {
     const artists = await this.prismaService.favoriteArtist.findMany({
       include: {
         artist: true,
-      }
+      },
     });
     const albums = await this.prismaService.favoriteAlbum.findMany({
       include: {
         album: true,
-      }
+      },
     });
     const tracks = await this.prismaService.favoriteTrack.findMany({
       include: {
         track: true,
-      }
+      },
     });
 
     return {

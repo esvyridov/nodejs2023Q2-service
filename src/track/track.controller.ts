@@ -174,7 +174,9 @@ export class TrackController {
       });
     }
 
-    return res.status(HttpStatus.OK).json(await this.trackService.update(id, updateTrackDto));
+    return res
+      .status(HttpStatus.OK)
+      .json(await this.trackService.update(id, updateTrackDto));
   }
 
   @Delete(':id')
@@ -195,8 +197,8 @@ export class TrackController {
 
     await this.prismaService.favoriteTrack.deleteMany({
       where: {
-        trackId: id
-      }
+        trackId: id,
+      },
     });
 
     await this.trackService.remove(id);

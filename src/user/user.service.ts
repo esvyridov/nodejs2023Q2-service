@@ -6,9 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly prismaService: PrismaService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   create({ login, password }: CreateUserDto): Promise<User> {
     return this.prismaService.user.create({
@@ -16,7 +14,7 @@ export class UserService {
         login,
         password,
         version: 1,
-      }
+      },
     });
   }
 
@@ -28,11 +26,14 @@ export class UserService {
     return this.prismaService.user.findUnique({
       where: {
         id,
-      }
+      },
     });
   }
 
-  async update(id: string, { newPassword }: UpdatePasswordDto): Promise<User | undefined> {
+  async update(
+    id: string,
+    { newPassword }: UpdatePasswordDto,
+  ): Promise<User | undefined> {
     const timestamp = new Date();
 
     const user = await this.findOne(id);
@@ -45,7 +46,7 @@ export class UserService {
         version: user.version + 1,
         password: newPassword,
         updatedAt: timestamp,
-      }
+      },
     });
   }
 
@@ -53,7 +54,7 @@ export class UserService {
     return this.prismaService.user.delete({
       where: {
         id,
-      }
+      },
     });
   }
 }

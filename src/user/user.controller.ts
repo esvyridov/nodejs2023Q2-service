@@ -22,7 +22,12 @@ const MAX_LOGIN_LENGTH = 128;
 const MIN_PASSWORD_LENGTH = 4;
 const MAX_PASSWORD_LENGTH = 128;
 
-const formatUser = (user: User): Omit<User, 'password' | 'createdAt' | 'updatedAt'> & { createdAt: number; updatedAt: number } => {
+const formatUser = (
+  user: User,
+): Omit<User, 'password' | 'createdAt' | 'updatedAt'> & {
+  createdAt: number;
+  updatedAt: number;
+} => {
   const userCopy: User = { ...user };
 
   delete userCopy.password;

@@ -122,7 +122,9 @@ export class ArtistController {
       });
     }
 
-    return res.status(HttpStatus.OK).json(await this.artistService.update(id, updateArtistDto));
+    return res
+      .status(HttpStatus.OK)
+      .json(await this.artistService.update(id, updateArtistDto));
   }
 
   @Delete(':id')
@@ -143,8 +145,8 @@ export class ArtistController {
 
     await this.prismaService.favoriteArtist.deleteMany({
       where: {
-        artistId: id
-      }
+        artistId: id,
+      },
     });
 
     await this.artistService.remove(id);

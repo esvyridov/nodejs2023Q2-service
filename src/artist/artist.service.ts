@@ -6,16 +6,14 @@ import { Artist } from '@prisma/client';
 
 @Injectable()
 export class ArtistService {
-  constructor(
-    private readonly prismaService: PrismaService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   create({ name, grammy }: CreateArtistDto): Promise<Artist> {
     return this.prismaService.artist.create({
       data: {
         name,
         grammy,
-      }
+      },
     });
   }
 
@@ -27,7 +25,7 @@ export class ArtistService {
     return this.prismaService.artist.findUnique({
       where: {
         id,
-      }
+      },
     });
   }
 
@@ -39,7 +37,7 @@ export class ArtistService {
       data: {
         name,
         grammy,
-      }
+      },
     });
   }
 
@@ -47,7 +45,7 @@ export class ArtistService {
     return this.prismaService.artist.delete({
       where: {
         id,
-      }
+      },
     });
   }
 }

@@ -10,7 +10,7 @@ export class FavAlbumService {
     return this.prismaService.favoriteAlbum.create({
       data: {
         albumId: albumId,
-      }
+      },
     });
   }
 
@@ -18,7 +18,7 @@ export class FavAlbumService {
     await this.prismaService.favoriteAlbum.deleteMany({
       where: {
         albumId,
-      }
+      },
     });
   }
 }

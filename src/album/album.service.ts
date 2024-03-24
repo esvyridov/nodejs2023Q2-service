@@ -6,9 +6,7 @@ import { Album } from '@prisma/client';
 
 @Injectable()
 export class AlbumService {
-  constructor(
-    private readonly prismaService: PrismaService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   create({ name, year, artistId }: CreateAlbumDto): Promise<Album> {
     return this.prismaService.album.create({
@@ -16,7 +14,7 @@ export class AlbumService {
         name,
         year,
         artistId,
-      }
+      },
     });
   }
 
@@ -28,7 +26,7 @@ export class AlbumService {
     return this.prismaService.album.findUnique({
       where: {
         id,
-      }
+      },
     });
   }
 
@@ -41,7 +39,7 @@ export class AlbumService {
         name,
         year,
         artistId,
-      }
+      },
     });
   }
 
@@ -49,7 +47,7 @@ export class AlbumService {
     return this.prismaService.album.delete({
       where: {
         id,
-      }
+      },
     });
   }
 }

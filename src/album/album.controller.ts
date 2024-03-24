@@ -148,7 +148,9 @@ export class AlbumController {
       });
     }
 
-    return res.status(HttpStatus.OK).json(await this.albumService.update(id, updateAlbumDto));
+    return res
+      .status(HttpStatus.OK)
+      .json(await this.albumService.update(id, updateAlbumDto));
   }
 
   @Delete(':id')
@@ -169,8 +171,8 @@ export class AlbumController {
 
     await this.prismaService.favoriteAlbum.deleteMany({
       where: {
-        albumId: id
-      }
+        albumId: id,
+      },
     });
 
     await this.albumService.remove(id);

@@ -10,7 +10,7 @@ export class FavTrackService {
     return this.prismaService.favoriteTrack.create({
       data: {
         trackId,
-      }
+      },
     });
   }
 
@@ -18,7 +18,7 @@ export class FavTrackService {
     await this.prismaService.favoriteTrack.deleteMany({
       where: {
         trackId,
-      }
+      },
     });
   }
 }

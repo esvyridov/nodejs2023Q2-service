@@ -6,18 +6,21 @@ import { Track } from '@prisma/client';
 
 @Injectable()
 export class TrackService {
-  constructor(
-    private readonly prismaService: PrismaService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
-  create({ name, artistId, albumId, duration }: CreateTrackDto): Promise<Track> {
+  create({
+    name,
+    artistId,
+    albumId,
+    duration,
+  }: CreateTrackDto): Promise<Track> {
     return this.prismaService.track.create({
       data: {
         name,
         artistId,
         albumId,
         duration,
-      }
+      },
     });
   }
 
@@ -29,7 +32,7 @@ export class TrackService {
     return this.prismaService.track.findUnique({
       where: {
         id,
-      }
+      },
     });
   }
 
@@ -39,22 +42,22 @@ export class TrackService {
   ): Promise<Track | undefined> {
     return this.prismaService.track.update({
       where: {
-        id
+        id,
       },
       data: {
         name,
         artistId,
         albumId,
         duration,
-      }
-    })
+      },
+    });
   }
 
   remove(id: string): Promise<Track> {
     return this.prismaService.track.delete({
       where: {
         id,
-      }
+      },
     });
   }
 }

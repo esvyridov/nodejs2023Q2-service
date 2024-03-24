@@ -22,14 +22,14 @@ export class FavTrackController {
   ) {}
 
   @Post(':id')
-  create(@Param('id') id: string, @Res() res: Response) {
+  async create(@Param('id') id: string, @Res() res: Response) {
     if (!this.uuidService.validate(id)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         error: `ID=${id} is not valid UUID`,
       });
     }
 
-    const track = this.trackService.findOne(id);
+    const track = await this.trackService.findOne(id);
 
     if (!track) {
       return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
@@ -37,7 +37,7 @@ export class FavTrackController {
       });
     }
 
-    this.favTrackService.create(track);
+    await this.favTrackService.create(id);
 
     return res.status(HttpStatus.CREATED).json({
       ok: true,
@@ -45,14 +45,14 @@ export class FavTrackController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @Res() res: Response) {
+  async remove(@Param('id') id: string, @Res() res: Response) {
     if (!this.uuidService.validate(id)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         error: `ID=${id} is not valid UUID`,
       });
     }
 
-    const track = this.trackService.findOne(id);
+    const track = await this.trackService.findOne(id);
 
     if (!track) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -60,7 +60,7 @@ export class FavTrackController {
       });
     }
 
-    this.favTrackService.remove(id);
+    await this.favTrackService.remove(id);
 
     return res.status(HttpStatus.NO_CONTENT).send();
   }

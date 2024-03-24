@@ -8,7 +8,7 @@ export class FavController {
   constructor(private readonly favService: FavService) {}
 
   @Get()
-  findAll() {
-    return this.favService.findAll();
+  async findAll() {
+    return await this.favService.findAll();
   }
 }

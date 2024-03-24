@@ -1,25 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from 'src/database/database.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class FavService {
-  constructor(private readonly dbService: DatabaseService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
-  findAll() {
-    const favoritesArtists = this.dbService.artists.filter((artist) =>
-      this.dbService.favorites.artists.includes(artist.id),
-    );
-    const favoritesAlbums = this.dbService.albums.filter((album) =>
-      this.dbService.favorites.albums.includes(album.id),
-    );
-    const favoritesTracks = this.dbService.tracks.filter((track) =>
-      this.dbService.favorites.tracks.includes(track.id),
-    );
+  async findAll() {
+    const artists = await this.prismaService.favoriteArtist.findMany({
+      include: {
+        artist: true,
+      },
+    });
+    const albums = await this.prismaService.favoriteAlbum.findMany({
+      include: {
+        album: true,
+      },
+    });
+    const tracks = await this.prismaService.favoriteTrack.findMany({
+      include: {
+        track: true,
+      },
+    });
 
     return {
-      artists: favoritesArtists,
-      albums: favoritesAlbums,
-      tracks: favoritesTracks,
+      artists: artists.map(({ artist }) => artist),
+      albums: albums.map(({ album }) => album),
+      tracks: tracks.map(({ track }) => track),
     };
   }
 }

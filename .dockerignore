@@ -1,2 +1,7 @@
-dist
+.git
 node_modules
+dist
+test
+.dockerignore
+.gitignore
+Dockerfile.*

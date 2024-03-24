@@ -156,7 +156,6 @@ describe('Favorites (e2e)', () => {
         .delete(artistsRoutes.delete(artistId))
         .set(commonHeaders);
 
-        console.log('here', deleteArtistResponse);
       expect(deleteArtistResponse.status).toBe(StatusCodes.NO_CONTENT);
 
       const deleteAlbumResponse = await unauthorizedRequest

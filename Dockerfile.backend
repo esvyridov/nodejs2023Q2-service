@@ -1,17 +1,25 @@
-FROM node:lts-alpine
+FROM node:lts-alpine as development
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
-
-RUN apk add .gyp python3 make g++ node-gyp
-
-RUN npm install
+COPY package.json package-lock.json ./
 
 COPY . .
 
+RUN apk add --no-cache --virtual .gyp python3 make g++ \
+    && npm install \
+    && apk del .gyp python3 make g++ \
+    && npm cache clean --force
+
 RUN npm run build
+
+FROM node:lts-alpine 
+
+WORKDIR /usr/src/app
+
+COPY --from=development /usr/src/app/dist ./dist
+COPY --from=development /usr/src/app/node_modules ./node_modules
 
 EXPOSE 4000
 
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/main.js"]

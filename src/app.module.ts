@@ -10,6 +10,7 @@ import { FavAlbumModule } from './fav-album/fav-album.module';
 import { FavArtistModule } from './fav-artist/fav-artist.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
+import { LoggingModule } from './logging/logging.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { PrismaModule } from './prisma/prisma.module';
     FavTrackModule,
     FavAlbumModule,
     FavArtistModule,
+    LoggingModule,
   ],
 })
 export class AppModule {}

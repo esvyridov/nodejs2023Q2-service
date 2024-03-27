@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Res,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { UUIDService } from 'src/uuid/uuid.service';
@@ -16,6 +17,8 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
+import { LoggingInterceptor } from 'src/logging/logging.interceptor';
+import { LoggingService } from 'src/logging/logging.service';
 
 const MIN_LOGIN_LENGTH = 1;
 const MAX_LOGIN_LENGTH = 128;
@@ -40,6 +43,7 @@ const formatUser = (
 };
 
 @ApiTags('User')
+@UseInterceptors(new LoggingInterceptor('User', new LoggingService()))
 @Controller()
 export class UserController {
   constructor(

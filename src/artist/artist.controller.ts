@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Res,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { UUIDService } from 'src/uuid/uuid.service';
@@ -16,11 +17,14 @@ import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { LoggingInterceptor } from 'src/logging/logging.interceptor';
+import { LoggingService } from 'src/logging/logging.service';
 
 const MIN_NAME_LENGTH = 1;
 const MAX_NAME_LENGTH = 128;
 
 @ApiTags('Artist')
+@UseInterceptors(new LoggingInterceptor('Artist', new LoggingService()))
 @Controller()
 export class ArtistController {
   constructor(

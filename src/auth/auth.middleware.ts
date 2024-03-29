@@ -7,9 +7,9 @@ export class AuthMiddleware implements NestMiddleware {
     constructor(private readonly jwtService: JwtService) {}
 
     async use(req: Request, res: Response, next: NextFunction) {
-        const authorization = req.headers['authorization'];
+        const authorization = req.headers['Authorization'];
 
-        if (!authorization?.startsWith('Bearer ')) {
+        if (typeof authorization !== 'string' || !authorization?.startsWith('Bearer ')) {
             return res.status(HttpStatus.UNAUTHORIZED).json({
                 error: 'Authorization header is invalid',
             })

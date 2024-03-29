@@ -146,7 +146,9 @@ export class AuthController {
 
       return res.status(HttpStatus.OK).json({
         accessToken: await this.jwtService.signAsync(payload),
-        refreshToken: await this.jwtService.signAsync(payload),
+        refreshToken: await this.jwtService.signAsync(payload, {
+          expiresIn: '7d'
+        }),
       })
     } catch (err) {
       return res.status(HttpStatus.FORBIDDEN).json({

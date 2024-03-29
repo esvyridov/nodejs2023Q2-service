@@ -8,7 +8,7 @@ import { AuthMiddleware } from './auth.middleware';
 @Module({
   imports: [UserModule, JwtModule.register({
     secret: process.env.JWT_SECRET_KEY,
-    signOptions: { expiresIn: '24h' },
+    signOptions: { expiresIn: '1d' },
   })],
   controllers: [AuthController],
   providers: [AuthService, AuthMiddleware]

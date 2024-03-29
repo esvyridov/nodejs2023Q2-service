@@ -33,7 +33,7 @@ import { UserController } from './user/user.controller';
     UserModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET_KEY,
-      signOptions: { expiresIn: '24h' },
+      signOptions: { expiresIn: '1d' },
     }),
     RouterModule.register([
       {
@@ -109,7 +109,8 @@ export class AppModule implements NestModule {
       .apply(AuthMiddleware)
       .exclude(
         { path: '/auth/login', method: RequestMethod.POST },
-        { path: '/auth/signup', method: RequestMethod.POST }
+        { path: '/auth/signup', method: RequestMethod.POST },
+        { path: '/auth/refresh', method: RequestMethod.POST },
       )
       .forRoutes(AuthController)
   }

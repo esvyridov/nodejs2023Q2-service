@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { UserModule } from './user/user.module';
 import { RouterModule } from '@nestjs/core';
 import { TrackModule } from './track/track.module';
@@ -14,16 +14,6 @@ import { LoggingModule } from './logging/logging.module';
 import { UnhandledRejectionHandler } from './utils/unhandled-rejection.exception';
 import { UncaughtExceptionHandler } from './utils/uncaught-exception.exception';
 import { AuthModule } from './auth/auth.module';
-import { AuthMiddleware } from './auth/auth.middleware';
-import { AlbumController } from './album/album.controller';
-import { ArtistController } from './artist/artist.controller';
-import { FavController } from './fav/fav.controller';
-import { FavAlbumController } from './fav-album/fav-album.controller';
-import { FavArtistController } from './fav-artist/fav-artist.controller';
-import { FavTrackController } from './fav-track/fav-track.controller';
-import { TrackController } from './track/track.controller';
-import { AuthController } from './auth/auth.controller';
-import { UserController } from './user/user.controller';
 import { JwtAuthModule } from './jwt-auth/jwt-auth.module';
 
 @Module({
@@ -82,33 +72,6 @@ import { JwtAuthModule } from './jwt-auth/jwt-auth.module';
     AuthModule,
     JwtAuthModule,
   ],
-  providers: [
-    UnhandledRejectionHandler,
-    UncaughtExceptionHandler,
-  ]
+  providers: [UnhandledRejectionHandler, UncaughtExceptionHandler],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuthMiddleware)
-      .forRoutes(
-        AlbumController,
-        ArtistController,
-        FavController,
-        FavAlbumController,
-        FavArtistController,
-        FavTrackController,
-        TrackController,
-        UserController,
-      );
-
-    consumer
-      .apply(AuthMiddleware)
-      .exclude(
-        { path: '/auth/login', method: RequestMethod.POST },
-        { path: '/auth/signup', method: RequestMethod.POST },
-        { path: '/auth/refresh', method: RequestMethod.POST },
-      )
-      .forRoutes(AuthController)
-  }
-}
+export class AppModule {}

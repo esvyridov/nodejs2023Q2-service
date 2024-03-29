@@ -1,4 +1,11 @@
-import { Body, Controller, HttpStatus, Post, Res, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpStatus,
+  Post,
+  Res,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import { LoggingInterceptor } from 'src/logging/logging.interceptor';
@@ -10,28 +17,27 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login-dto';
 import { RefreshDto } from './dto/refresh-dto';
-import { CRYPT_SALT } from './auth.constants';
 
 @ApiTags('Auth')
 @UseInterceptors(new LoggingInterceptor('Auth', new LoggingService()))
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService, private readonly userService: UserService, private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   @Post('signup')
   async signup(@Body() signupDto: SignupDto, @Res() res: Response) {
     const { login, password } = signupDto;
     const errors: Partial<Record<keyof SignupDto, string>> = {};
 
-    if (
-      typeof login !== 'string'
-    ) {
+    if (typeof login !== 'string') {
       errors.login = 'Field "login" is not provided or invalid';
     }
 
-    if (
-      typeof password !== 'string'
-    ) {
+    if (typeof password !== 'string') {
       errors.password = 'Field "password" is not provided or invalid';
     }
 
@@ -51,13 +57,11 @@ export class AuthController {
       login: user.login,
     };
 
-    return res
-      .status(HttpStatus.CREATED)
-      .json({
-        accessToken: await this.jwtService.signAsync(payload),
-        refreshToken: await this.jwtService.signAsync(payload),
-        ...this.userService.formatUser(user)
-      });
+    return res.status(HttpStatus.CREATED).json({
+      accessToken: await this.jwtService.signAsync(payload),
+      refreshToken: await this.jwtService.signAsync(payload),
+      ...this.userService.formatUser(user),
+    });
   }
 
   @Post('login')
@@ -65,15 +69,11 @@ export class AuthController {
     const { login, password } = loginDto;
     const errors: Partial<Record<keyof LoginDto, string>> = {};
 
-    if (
-      typeof login !== 'string'
-    ) {
+    if (typeof login !== 'string') {
       errors.login = 'Field "login" is not provided or invalid';
     }
 
-    if (
-      typeof password !== 'string'
-    ) {
+    if (typeof password !== 'string') {
       errors.password = 'Field "password" is not provided or invalid';
     }
 
@@ -88,13 +88,13 @@ export class AuthController {
     if (!user) {
       return res.status(HttpStatus.FORBIDDEN).json({
         error: 'You have entered an invalid login or password',
-      })
+      });
     }
 
-    if (!await bcrypt.compare(password, user.password)) {
+    if (!(await bcrypt.compare(password, user.password))) {
       return res.status(HttpStatus.FORBIDDEN).json({
         error: 'You have entered an invalid login or password',
-      })
+      });
     }
 
     const payload = {
@@ -102,13 +102,11 @@ export class AuthController {
       login: user.login,
     };
 
-    return res
-      .status(HttpStatus.OK)
-      .json({
-        accessToken: await this.jwtService.signAsync(payload),
-        refreshToken: await this.jwtService.signAsync(payload),
-        ...this.userService.formatUser(user)
-      });
+    return res.status(HttpStatus.OK).json({
+      accessToken: await this.jwtService.signAsync(payload),
+      refreshToken: await this.jwtService.signAsync(payload),
+      ...this.userService.formatUser(user),
+    });
   }
 
   @Post('refresh')
@@ -116,9 +114,7 @@ export class AuthController {
     const { refreshToken } = refreshDto;
     const errors: Partial<Record<keyof RefreshDto, string>> = {};
 
-    if (
-      typeof refreshToken !== 'string'
-    ) {
+    if (typeof refreshToken !== 'string') {
       errors.refreshToken = 'Field "refreshToken" is not provided or invalid';
     }
 
@@ -147,9 +143,9 @@ export class AuthController {
       return res.status(HttpStatus.OK).json({
         accessToken: await this.jwtService.signAsync(payload),
         refreshToken: await this.jwtService.signAsync(payload, {
-          expiresIn: '7d'
+          expiresIn: '7d',
         }),
-      })
+      });
     } catch (err) {
       return res.status(HttpStatus.FORBIDDEN).json({
         error: 'Refresh token is invalid or expired',

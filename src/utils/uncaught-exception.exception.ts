@@ -8,6 +8,6 @@ export class UncaughtExceptionHandler {
   }
 
   handle(reason: any) {
-    this.loggingService.error('Uncaught Exception:' + reason);
+    this.loggingService.error(`Uncaught Exception: ${reason}`);
   }
 }

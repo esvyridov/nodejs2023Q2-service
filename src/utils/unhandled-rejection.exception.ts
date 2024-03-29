@@ -10,6 +10,6 @@ export class UnhandledRejectionHandler {
   handle(reason: any) {
     const message = reason instanceof Error ? reason.message : reason;
 
-    this.loggingService.error('Unhandled Rejection: ' + message);
+    this.loggingService.error(`Unhandled Rejection: ${message}`);
   }
 }

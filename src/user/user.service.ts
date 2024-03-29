@@ -74,13 +74,13 @@ export class UserService {
     updatedAt: number;
   } {
     const userCopy: User = { ...user };
-  
+
     delete userCopy.password;
-  
+
     return {
       ...userCopy,
       createdAt: user.createdAt.valueOf(),
       updatedAt: user.updatedAt.valueOf(),
     };
-  };
+  }
 }

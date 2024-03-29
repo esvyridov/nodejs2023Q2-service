@@ -35,15 +35,11 @@ export class UserController {
     const { login, password } = createUserDto;
     const errors: Partial<Record<keyof CreateUserDto, string>> = {};
 
-    if (
-      typeof login !== 'string'
-    ) {
+    if (typeof login !== 'string') {
       errors.login = 'Field "login" is not provided or invalid';
     }
 
-    if (
-      typeof password !== 'string'
-    ) {
+    if (typeof password !== 'string') {
       errors.password = 'Field "password" is not provided or invalid';
     }
 
@@ -55,7 +51,11 @@ export class UserController {
 
     return res
       .status(HttpStatus.CREATED)
-      .json(this.userService.formatUser(await this.userService.create(createUserDto)));
+      .json(
+        this.userService.formatUser(
+          await this.userService.create(createUserDto),
+        ),
+      );
   }
 
   @Get()
@@ -97,15 +97,11 @@ export class UserController {
     const { newPassword, oldPassword } = updatePasswordDto;
     const errors: Partial<Record<keyof UpdatePasswordDto, string>> = {};
 
-    if (
-      typeof newPassword !== 'string'
-    ) {
+    if (typeof newPassword !== 'string') {
       errors.newPassword = 'Field "newPassword" is not provided or invalid';
     }
 
-    if (
-      typeof oldPassword !== 'string'
-    ) {
+    if (typeof oldPassword !== 'string') {
       errors.oldPassword = 'Field "oldPassword" is not provided or invalid';
     }
 
@@ -123,7 +119,7 @@ export class UserController {
       });
     }
 
-    if (!await bcrypt.compare(oldPassword, user.password)) {
+    if (!(await bcrypt.compare(oldPassword, user.password))) {
       return res.status(HttpStatus.FORBIDDEN).json({
         error: "Passwords don't match",
       });
@@ -131,11 +127,13 @@ export class UserController {
 
     const hash = await bcrypt.hash(newPassword, CRYPT_SALT);
 
-    return res
-      .status(HttpStatus.OK)
-      .json(this.userService.formatUser(await this.userService.update(id, {
-        newPassword: hash,
-      })));
+    return res.status(HttpStatus.OK).json(
+      this.userService.formatUser(
+        await this.userService.update(id, {
+          newPassword: hash,
+        }),
+      ),
+    );
   }
 
   @Delete(':id')

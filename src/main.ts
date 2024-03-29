@@ -12,9 +12,7 @@ async function bootstrap() {
   const httpAdapter = app.get(HttpAdapterHost);
 
   app.useLogger(app.get(LoggingService));
-  app.useGlobalFilters(
-    new AllExceptionFilter(httpAdapter),
-  );
+  app.useGlobalFilters(new AllExceptionFilter(httpAdapter));
 
   const options = new DocumentBuilder()
     .setTitle('Home Library Service')

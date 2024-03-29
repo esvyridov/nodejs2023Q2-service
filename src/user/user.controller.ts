@@ -16,31 +16,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
-import { User } from '@prisma/client';
 import { LoggingInterceptor } from 'src/logging/logging.interceptor';
 import { LoggingService } from 'src/logging/logging.service';
-
-const MIN_LOGIN_LENGTH = 1;
-const MAX_LOGIN_LENGTH = 128;
-const MIN_PASSWORD_LENGTH = 4;
-const MAX_PASSWORD_LENGTH = 128;
-
-const formatUser = (
-  user: User,
-): Omit<User, 'password' | 'createdAt' | 'updatedAt'> & {
-  createdAt: number;
-  updatedAt: number;
-} => {
-  const userCopy: User = { ...user };
-
-  delete userCopy.password;
-
-  return {
-    ...userCopy,
-    createdAt: user.createdAt.valueOf(),
-    updatedAt: user.updatedAt.valueOf(),
-  };
-};
+import * as bcrypt from 'bcrypt';
+import { CRYPT_SALT } from 'src/auth/auth.constants';
 
 @ApiTags('User')
 @UseInterceptors(new LoggingInterceptor('User', new LoggingService()))
@@ -57,17 +36,13 @@ export class UserController {
     const errors: Partial<Record<keyof CreateUserDto, string>> = {};
 
     if (
-      typeof login !== 'string' ||
-      login.length < MIN_LOGIN_LENGTH ||
-      login.length > MAX_LOGIN_LENGTH
+      typeof login !== 'string'
     ) {
       errors.login = 'Field "login" is not provided or invalid';
     }
 
     if (
-      typeof password !== 'string' ||
-      password.length < MIN_PASSWORD_LENGTH ||
-      password.length > MAX_PASSWORD_LENGTH
+      typeof password !== 'string'
     ) {
       errors.password = 'Field "password" is not provided or invalid';
     }
@@ -80,7 +55,7 @@ export class UserController {
 
     return res
       .status(HttpStatus.CREATED)
-      .json(formatUser(await this.userService.create(createUserDto)));
+      .json(this.userService.formatUser(await this.userService.create(createUserDto)));
   }
 
   @Get()
@@ -104,7 +79,7 @@ export class UserController {
       });
     }
 
-    return res.status(HttpStatus.OK).json(formatUser(user));
+    return res.status(HttpStatus.OK).json(this.userService.formatUser(user));
   }
 
   @Put(':id')
@@ -123,17 +98,13 @@ export class UserController {
     const errors: Partial<Record<keyof UpdatePasswordDto, string>> = {};
 
     if (
-      typeof newPassword !== 'string' ||
-      newPassword.length < MIN_PASSWORD_LENGTH ||
-      newPassword.length > MAX_PASSWORD_LENGTH
+      typeof newPassword !== 'string'
     ) {
       errors.newPassword = 'Field "newPassword" is not provided or invalid';
     }
 
     if (
-      typeof oldPassword !== 'string' ||
-      oldPassword.length < MIN_PASSWORD_LENGTH ||
-      oldPassword.length > MAX_PASSWORD_LENGTH
+      typeof oldPassword !== 'string'
     ) {
       errors.oldPassword = 'Field "oldPassword" is not provided or invalid';
     }
@@ -152,15 +123,19 @@ export class UserController {
       });
     }
 
-    if (user.password !== oldPassword) {
+    if (!await bcrypt.compare(oldPassword, user.password)) {
       return res.status(HttpStatus.FORBIDDEN).json({
         error: "Passwords don't match",
       });
     }
 
+    const hash = await bcrypt.hash(newPassword, CRYPT_SALT);
+
     return res
       .status(HttpStatus.OK)
-      .json(formatUser(await this.userService.update(id, updatePasswordDto)));
+      .json(this.userService.formatUser(await this.userService.update(id, {
+        newPassword: hash,
+      })));
   }
 
   @Delete(':id')

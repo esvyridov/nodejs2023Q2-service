@@ -23,18 +23,14 @@ import { FavArtistController } from './fav-artist/fav-artist.controller';
 import { FavTrackController } from './fav-track/fav-track.controller';
 import { TrackController } from './track/track.controller';
 import { AuthController } from './auth/auth.controller';
-import { JwtModule } from '@nestjs/jwt';
 import { UserController } from './user/user.controller';
+import { JwtAuthModule } from './jwt-auth/jwt-auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     PrismaModule,
     UserModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET_KEY,
-      signOptions: { expiresIn: '1d' },
-    }),
     RouterModule.register([
       {
         path: 'auth',
@@ -84,6 +80,7 @@ import { UserController } from './user/user.controller';
     FavArtistModule,
     LoggingModule,
     AuthModule,
+    JwtAuthModule,
   ],
   providers: [
     UnhandledRejectionHandler,

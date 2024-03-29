@@ -1,7 +1,8 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler, HttpException, HttpStatus } from '@nestjs/common';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { LoggingService } from './logging.service';
+import { Request, Response } from 'express';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -11,7 +12,8 @@ export class LoggingInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const ctx = context.switchToHttp();
-    const req = ctx.getRequest();
+    const req = ctx.getRequest<Request>();
+    const res = ctx.getResponse<Response>();
 
     this.loggingService.log(`Received a Request: URL - ${req.url}; Body - ${JSON.stringify(req.body)}; Params - ${JSON.stringify(req.params)}; Query - ${JSON.stringify(req.query)}.`);
 
@@ -19,9 +21,13 @@ export class LoggingInterceptor implements NestInterceptor {
       .handle()
       .pipe(
         tap(() => {
-            const res = ctx.getResponse();
-            this.loggingService.log(`A response was send: Status Code - ${res.statusCode}.`);
+          this.loggingService.log(`A response was send: Status Code - ${res.statusCode}.`);
         }),
+        catchError(err => {
+          const httpStatus = err instanceof HttpException ? err.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+          this.loggingService.error(`A response was send: Status Code - ${httpStatus}.`);
+          return throwError(() => err);
+        })
       );
   }
 }

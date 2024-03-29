@@ -1,15 +1,20 @@
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { LoggingService } from './logging/logging.service';
+import { AllExceptionFilter } from './utils/http-expection.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: false,
     bufferLogs: true,
   });
 
+  const httpAdapter = app.get(HttpAdapterHost);
+
   app.useLogger(app.get(LoggingService));
+  app.useGlobalFilters(
+    new AllExceptionFilter(httpAdapter),
+  );
 
   const options = new DocumentBuilder()
     .setTitle('Home Library Service')

@@ -11,6 +11,8 @@ import { FavArtistModule } from './fav-artist/fav-artist.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { LoggingModule } from './logging/logging.module';
+import { UnhandledRejectionHandler } from './utils/unhandled-rejection.exception';
+import { UncaughtExceptionHandler } from './utils/uncaught-exception.exception';
 
 @Module({
   imports: [
@@ -62,5 +64,9 @@ import { LoggingModule } from './logging/logging.module';
     FavArtistModule,
     LoggingModule,
   ],
+  providers: [
+    UnhandledRejectionHandler,
+    UncaughtExceptionHandler,
+  ]
 })
 export class AppModule {}

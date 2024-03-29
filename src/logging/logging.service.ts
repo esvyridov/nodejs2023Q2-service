@@ -1,18 +1,40 @@
-import { ConsoleLogger, Injectable } from '@nestjs/common';
+import { ConsoleLogger, Injectable, LogLevel } from '@nestjs/common';
 
 @Injectable()
 export class LoggingService extends ConsoleLogger {
-    logRequest(url: string, body: any, queryParameters: any) {
-        console.log({
-            url,
-            body,
-            queryParameters,
-        })
+    constructor() {
+        const logLevels = (process.env.LOGGING_LEVELS ?? '').split(',').map((level: LogLevel) => level.trim()) as LogLevel[];
+
+        super(undefined, {
+            logLevels,
+        });
     }
 
-    logResponse(statusCode: string) {
-        console.log({
-            statusCode,
-        })
+    log(message: string) {
+        super.log(message);
+    }
+
+    error(message: string, stack?: string, context?: string) {
+        if (typeof stack !== 'undefined') {
+            if (typeof context !== 'undefined') {
+                return super.error(message, stack, context);
+            }
+            
+            return super.error(message, stack);
+        }
+
+        super.error(message);
+    }
+
+    warn(message: string) {
+        super.warn(message);
+    }
+
+    debug(message: string) {
+        super.debug(message);
+    }
+
+    verbose(message: string) {
+        super.log(message);
     }
 }

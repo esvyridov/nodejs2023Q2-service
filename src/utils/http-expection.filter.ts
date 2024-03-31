@@ -24,7 +24,6 @@ export class AllExceptionFilter implements ExceptionFilter {
       message: 'Something went wrong.',
     };
 
-    console.log(exception);
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
   }
 }

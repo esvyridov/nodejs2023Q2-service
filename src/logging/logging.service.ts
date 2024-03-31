@@ -18,8 +18,16 @@ export class LoggingService extends ConsoleLogger {
   logLevels = logLevels.slice(0, isNaN(logLevel) ? logLevels.length : logLevel);
   logFileIndex = 1;
   errorFileIndex = 1;
-  maxLogFileSize = 1024 * (isNaN(parseInt(process.env.LOG_FILE_SIZE_KB, 10)) ? parseInt(process.env.LOG_FILE_SIZE_KB, 10) : 128); 
-  maxErrorFileSize = 1024 * (isNaN(parseInt(process.env.ERROR_FILE_SIZE_KB, 10)) ? parseInt(process.env.ERROR_FILE_SIZE_KB, 10) : 128);
+  maxLogFileSize =
+    1024 *
+    (isNaN(parseInt(process.env.LOG_FILE_SIZE_KB, 10))
+      ? parseInt(process.env.LOG_FILE_SIZE_KB, 10)
+      : 128);
+  maxErrorFileSize =
+    1024 *
+    (isNaN(parseInt(process.env.ERROR_FILE_SIZE_KB, 10))
+      ? parseInt(process.env.ERROR_FILE_SIZE_KB, 10)
+      : 128);
 
   getLogFilePath() {
     return resolve(__dirname, `../../logs/logs_${this.logFileIndex}.log`);
@@ -50,17 +58,22 @@ export class LoggingService extends ConsoleLogger {
   }
 
   formatFileMessage(message: string, logLevel: LogLevel) {
-    return `${dateTimeFormatter.format(Date.now())} ${logLevel.toUpperCase()} ${message}`;
+    return `${dateTimeFormatter.format(
+      Date.now(),
+    )} ${logLevel.toUpperCase()} ${message}`;
   }
 
   async log(message: string) {
     if (!this.logLevels.includes('log')) {
       return;
     }
-    
-    await this.writeLog(this.getLogFilePath(), this.formatFileMessage(message, 'log'));
+
+    await this.writeLog(
+      this.getLogFilePath(),
+      this.formatFileMessage(message, 'log'),
+    );
     await this.rotateLogFile();
-    
+
     super.log(message);
   }
 
@@ -69,7 +82,10 @@ export class LoggingService extends ConsoleLogger {
       return;
     }
 
-    await this.writeLog(this.getErrorFilePath(), this.formatFileMessage(message, 'error'));
+    await this.writeLog(
+      this.getErrorFilePath(),
+      this.formatFileMessage(message, 'error'),
+    );
     await this.rotateErrorFile();
 
     super.error(message);
@@ -80,7 +96,10 @@ export class LoggingService extends ConsoleLogger {
       return;
     }
 
-    await this.writeLog(this.getLogFilePath(), this.formatFileMessage(message, 'warn'));
+    await this.writeLog(
+      this.getLogFilePath(),
+      this.formatFileMessage(message, 'warn'),
+    );
     await this.rotateLogFile();
     super.warn(message);
   }
@@ -90,7 +109,10 @@ export class LoggingService extends ConsoleLogger {
       return;
     }
 
-    await this.writeLog(this.getLogFilePath(), this.formatFileMessage(message, 'debug'));
+    await this.writeLog(
+      this.getLogFilePath(),
+      this.formatFileMessage(message, 'debug'),
+    );
     await this.rotateLogFile();
     super.debug(message);
   }
@@ -100,7 +122,10 @@ export class LoggingService extends ConsoleLogger {
       return;
     }
 
-    await this.writeLog(this.getLogFilePath(), this.formatFileMessage(message, 'verbose'));
+    await this.writeLog(
+      this.getLogFilePath(),
+      this.formatFileMessage(message, 'verbose'),
+    );
     await this.rotateLogFile();
     super.log(message);
   }

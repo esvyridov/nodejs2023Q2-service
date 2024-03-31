@@ -3,7 +3,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { LoggingService } from './logging/logging.service';
 import { AllExceptionFilter } from './utils/http-expection.filter';
-import {  mkdir, stat } from 'node:fs/promises';
+import { mkdir, stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 async function bootstrap() {
@@ -14,7 +14,7 @@ async function bootstrap() {
   });
 
   try {
-    await stat(logsPath)
+    await stat(logsPath);
   } catch (err) {
     await mkdir(resolve(__dirname, '../logs'));
   }

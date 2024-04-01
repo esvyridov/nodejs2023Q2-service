@@ -26,16 +26,22 @@ For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 After application running open new terminal and enter:
 
-To run all tests
+To run all test with authorization
 
 ```
-npm run test
+npm run test:auth
 ```
 
 To run only one of all test suites
 
 ```
-npm run test -- <path to suite>
+npm run test:auth -- <path to suite>
+```
+
+To test refresh token
+
+```
+npm run test:refresh
 ```
 
 ### Auto-fix and format

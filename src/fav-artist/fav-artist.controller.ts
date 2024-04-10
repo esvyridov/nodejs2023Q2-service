@@ -5,14 +5,18 @@ import {
   Param,
   Post,
   Res,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ArtistService } from 'src/artist/artist.service';
 import { UUIDService } from 'src/uuid/uuid.service';
 import { FavArtistService } from './fav-artist.service';
 import { ApiTags } from '@nestjs/swagger';
+import { LoggingService } from 'src/logging/logging.service';
+import { LoggingInterceptor } from 'src/logging/logging.interceptor';
 
 @ApiTags('Favorite Artists')
+@UseInterceptors(new LoggingInterceptor('Fav Artist', new LoggingService()))
 @Controller()
 export class FavArtistController {
   constructor(

@@ -1,18 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import * as bcrypt from 'bcrypt';
+import { CRYPT_SALT } from 'src/auth/auth.constants';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create({ login, password }: CreateUserDto): Promise<User> {
+  async create({ login, password }: CreateUserDto): Promise<User> {
+    const hash = await bcrypt.hash(password, CRYPT_SALT);
+
     return this.prismaService.user.create({
       data: {
         login,
-        password,
+        password: hash,
         version: 1,
       },
     });
@@ -30,9 +33,17 @@ export class UserService {
     });
   }
 
+  findOneByLogin(login: string): Promise<User | undefined> {
+    return this.prismaService.user.findFirst({
+      where: {
+        login,
+      },
+    });
+  }
+
   async update(
     id: string,
-    { newPassword }: UpdatePasswordDto,
+    { newPassword }: { newPassword: string },
   ): Promise<User | undefined> {
     const timestamp = new Date();
 
@@ -56,5 +67,20 @@ export class UserService {
         id,
       },
     });
+  }
+
+  formatUser(user: User): Omit<User, 'password' | 'createdAt' | 'updatedAt'> & {
+    createdAt: number;
+    updatedAt: number;
+  } {
+    const userCopy: User = { ...user };
+
+    delete userCopy.password;
+
+    return {
+      ...userCopy,
+      createdAt: user.createdAt.valueOf(),
+      updatedAt: user.updatedAt.valueOf(),
+    };
   }
 }

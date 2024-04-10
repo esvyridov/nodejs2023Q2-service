@@ -10,6 +10,11 @@ import { FavAlbumModule } from './fav-album/fav-album.module';
 import { FavArtistModule } from './fav-artist/fav-artist.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
+import { LoggingModule } from './logging/logging.module';
+import { UnhandledRejectionHandler } from './utils/unhandled-rejection.exception';
+import { UncaughtExceptionHandler } from './utils/uncaught-exception.exception';
+import { AuthModule } from './auth/auth.module';
+import { JwtAuthModule } from './jwt-auth/jwt-auth.module';
 
 @Module({
   imports: [
@@ -17,6 +22,10 @@ import { PrismaModule } from './prisma/prisma.module';
     PrismaModule,
     UserModule,
     RouterModule.register([
+      {
+        path: 'auth',
+        module: AuthModule,
+      },
       {
         path: 'user',
         module: UserModule,
@@ -59,6 +68,10 @@ import { PrismaModule } from './prisma/prisma.module';
     FavTrackModule,
     FavAlbumModule,
     FavArtistModule,
+    LoggingModule,
+    AuthModule,
+    JwtAuthModule,
   ],
+  providers: [UnhandledRejectionHandler, UncaughtExceptionHandler],
 })
 export class AppModule {}

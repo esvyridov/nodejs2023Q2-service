@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Res,
   Put,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
@@ -17,11 +18,14 @@ import { Response } from 'express';
 import { ArtistService } from 'src/artist/artist.service';
 import { ApiTags } from '@nestjs/swagger';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { LoggingInterceptor } from 'src/logging/logging.interceptor';
+import { LoggingService } from 'src/logging/logging.service';
 
 const MIN_NAME_LENGTH = 1;
 const MAX_NAME_LENGTH = 128;
 
 @ApiTags('Album')
+@UseInterceptors(new LoggingInterceptor('Album', new LoggingService()))
 @Controller()
 export class AlbumController {
   constructor(

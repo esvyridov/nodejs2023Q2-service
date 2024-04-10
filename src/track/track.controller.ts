@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Res,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AlbumService } from 'src/album/album.service';
@@ -18,11 +19,14 @@ import { UpdateTrackDto } from './dto/update-track.dto';
 import { TrackService } from './track.service';
 import { ApiTags } from '@nestjs/swagger';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { LoggingInterceptor } from 'src/logging/logging.interceptor';
+import { LoggingService } from 'src/logging/logging.service';
 
 const MIN_NAME_LENGTH = 1;
 const MAX_NAME_LENGTH = 128;
 
 @ApiTags('Track')
+@UseInterceptors(new LoggingInterceptor('Track', new LoggingService()))
 @Controller()
 export class TrackController {
   constructor(

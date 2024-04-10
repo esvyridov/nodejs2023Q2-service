@@ -5,14 +5,18 @@ import {
   Param,
   Post,
   Res,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FavTrackService } from './fav-track.service';
 import { UUIDService } from 'src/uuid/uuid.service';
 import { Response } from 'express';
 import { TrackService } from 'src/track/track.service';
 import { ApiTags } from '@nestjs/swagger';
+import { LoggingService } from 'src/logging/logging.service';
+import { LoggingInterceptor } from 'src/logging/logging.interceptor';
 
 @ApiTags('Favorite Tracks')
+@UseInterceptors(new LoggingInterceptor('Fav Track', new LoggingService()))
 @Controller()
 export class FavTrackController {
   constructor(

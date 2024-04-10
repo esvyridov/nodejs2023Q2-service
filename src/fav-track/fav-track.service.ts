@@ -1,18 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { Track } from 'src/track/entities/track.entity';
-import { DatabaseService } from 'src/database/database.service';
+import { FavoriteTrack } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class FavTrackService {
-  constructor(private readonly dbService: DatabaseService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
-  create(track: Track) {
-    this.dbService.favorites.tracks.push(track.id);
+  create(trackId: string): Promise<FavoriteTrack> {
+    return this.prismaService.favoriteTrack.create({
+      data: {
+        trackId,
+      },
+    });
   }
 
-  remove(idToRemove: string) {
-    this.dbService.favorites.tracks = this.dbService.favorites.tracks.filter(
-      (trackId) => trackId !== idToRemove,
-    );
+  async remove(trackId: string) {
+    await this.prismaService.favoriteTrack.deleteMany({
+      where: {
+        trackId,
+      },
+    });
   }
 }

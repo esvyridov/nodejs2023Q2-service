@@ -1,18 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { Album } from 'src/album/entities/album.entity';
-import { DatabaseService } from 'src/database/database.service';
+import { FavoriteAlbum } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class FavAlbumService {
-  constructor(private readonly dbService: DatabaseService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
-  create(album: Album) {
-    this.dbService.favorites.albums.push(album.id);
+  create(albumId: string): Promise<FavoriteAlbum> {
+    return this.prismaService.favoriteAlbum.create({
+      data: {
+        albumId: albumId,
+      },
+    });
   }
 
-  remove(idToRemove: string) {
-    this.dbService.favorites.albums = this.dbService.favorites.albums.filter(
-      (albumId) => albumId !== idToRemove,
-    );
+  async remove(albumId: string): Promise<void> {
+    await this.prismaService.favoriteAlbum.deleteMany({
+      where: {
+        albumId,
+      },
+    });
   }
 }

@@ -3,6 +3,7 @@
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
+- Docker [Download & Install Docker](https://docs.docker.com/engine/install/).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
 
 ## Downloading
@@ -11,16 +12,10 @@
 git clone git@github.com:esvyridov/nodejs2023Q2-service.git
 ```
 
-## Installing NPM modules
-
-```
-npm install
-```
-
 ## Running application
 
 ```
-npm start
+docker-compose up
 ```
 
 After starting the app on port (4000 as default) you can open
@@ -31,7 +26,7 @@ For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 After application running open new terminal and enter:
 
-To run all tests without authorization
+To run all tests
 
 ```
 npm run test
@@ -58,3 +53,7 @@ npm run format
 Press <kbd>F5</kbd> to debug.
 
 For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+
+### Docker Images
+
+- [NestJS app image](https://hub.docker.com/repository/docker/eugenesv1/nodejs2023q2-service-backend/general)

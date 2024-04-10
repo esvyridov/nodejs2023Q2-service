@@ -1,61 +1,63 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { DatabaseService } from 'src/database/database.service';
-import { UUIDService } from 'src/uuid/uuid.service';
-import { Track } from './entities/track.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Track } from '@prisma/client';
 
 @Injectable()
 export class TrackService {
-  constructor(
-    private readonly dbService: DatabaseService,
-    private readonly uuidService: UUIDService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
-  create({ name, artistId, albumId, duration }: CreateTrackDto): Track {
-    const track: Track = {
-      id: this.uuidService.generate(),
-      name,
-      artistId,
-      albumId,
-      duration,
-    };
-
-    this.dbService.tracks.push(track);
-
-    return track;
+  create({
+    name,
+    artistId,
+    albumId,
+    duration,
+  }: CreateTrackDto): Promise<Track> {
+    return this.prismaService.track.create({
+      data: {
+        name,
+        artistId,
+        albumId,
+        duration,
+      },
+    });
   }
 
-  findAll(): Track[] {
-    return this.dbService.tracks;
+  findAll(): Promise<Track[]> {
+    return this.prismaService.track.findMany();
   }
 
-  findOne(id: string): Track | undefined {
-    return this.dbService.tracks.find((track) => track.id === id);
+  findOne(id: string): Promise<Track | undefined> {
+    return this.prismaService.track.findUnique({
+      where: {
+        id,
+      },
+    });
   }
 
   update(
     id: string,
     { name, artistId, albumId, duration }: UpdateTrackDto,
-  ): void {
-    this.dbService.tracks = this.dbService.tracks.map((track) => {
-      if (track.id === id) {
-        return {
-          ...track,
-          name,
-          artistId,
-          albumId,
-          duration,
-        };
-      }
-
-      return track;
+  ): Promise<Track | undefined> {
+    return this.prismaService.track.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        artistId,
+        albumId,
+        duration,
+      },
     });
   }
 
-  remove(id: string): void {
-    this.dbService.tracks = this.dbService.tracks.filter(
-      (track) => track.id !== id,
-    );
+  remove(id: string): Promise<Track> {
+    return this.prismaService.track.delete({
+      where: {
+        id,
+      },
+    });
   }
 }

@@ -10,12 +10,12 @@ import {
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { DatabaseService } from 'src/database/database.service';
 import { UUIDService } from 'src/uuid/uuid.service';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 const MIN_NAME_LENGTH = 1;
 const MAX_NAME_LENGTH = 128;
@@ -25,12 +25,12 @@ const MAX_NAME_LENGTH = 128;
 export class ArtistController {
   constructor(
     private readonly artistService: ArtistService,
+    private readonly prismaService: PrismaService,
     private readonly uuidService: UUIDService,
-    private readonly dbService: DatabaseService,
   ) {}
 
   @Post()
-  create(@Body() createArtistDto: CreateArtistDto, @Res() res: Response) {
+  async create(@Body() createArtistDto: CreateArtistDto, @Res() res: Response) {
     const { name, grammy } = createArtistDto;
     const errors: Partial<Record<keyof CreateArtistDto, string>> = {};
 
@@ -54,23 +54,23 @@ export class ArtistController {
 
     return res
       .status(HttpStatus.CREATED)
-      .json(this.artistService.create(createArtistDto));
+      .json(await this.artistService.create(createArtistDto));
   }
 
   @Get()
-  findAll() {
-    return this.artistService.findAll();
+  async findAll() {
+    return await this.artistService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Res() res: Response) {
+  async findOne(@Param('id') id: string, @Res() res: Response) {
     if (!this.uuidService.validate(id)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         error: `ID=${id} is not valid UUID`,
       });
     }
 
-    const artist = this.artistService.findOne(id);
+    const artist = await this.artistService.findOne(id);
 
     if (!artist) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -82,7 +82,7 @@ export class ArtistController {
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateArtistDto: UpdateArtistDto,
     @Res() res: Response,
@@ -114,7 +114,7 @@ export class ArtistController {
       });
     }
 
-    const artist = this.artistService.findOne(id);
+    const artist = await this.artistService.findOne(id);
 
     if (!artist) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -122,20 +122,20 @@ export class ArtistController {
       });
     }
 
-    this.artistService.update(id, updateArtistDto);
-
-    return res.status(HttpStatus.OK).json(this.artistService.findOne(id));
+    return res
+      .status(HttpStatus.OK)
+      .json(await this.artistService.update(id, updateArtistDto));
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @Res() res: Response) {
+  async remove(@Param('id') id: string, @Res() res: Response) {
     if (!this.uuidService.validate(id)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         error: `ID=${id} is not valid UUID`,
       });
     }
 
-    const artist = this.artistService.findOne(id);
+    const artist = await this.artistService.findOne(id);
 
     if (!artist) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -143,23 +143,13 @@ export class ArtistController {
       });
     }
 
-    this.dbService.albums.forEach((album) => {
-      if (album.artistId === id) {
-        album.artistId = null;
-      }
+    await this.prismaService.favoriteArtist.deleteMany({
+      where: {
+        artistId: id,
+      },
     });
 
-    this.dbService.tracks.forEach((track) => {
-      if (track.artistId === id) {
-        track.artistId = null;
-      }
-    });
-
-    this.dbService.favorites.artists = this.dbService.favorites.artists.filter(
-      (artistId) => artistId !== id,
-    );
-
-    this.artistService.remove(id);
+    await this.artistService.remove(id);
 
     return res.status(HttpStatus.NO_CONTENT).send();
   }

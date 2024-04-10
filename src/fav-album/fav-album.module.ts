@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { FavAlbumService } from './fav-album.service';
 import { FavAlbumController } from './fav-album.controller';
-import { DatabaseModule } from 'src/database/database.module';
 import { UUIDModule } from 'src/uuid/uuid.module';
 import { AlbumModule } from 'src/album/album.module';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports: [DatabaseModule, UUIDModule, AlbumModule],
+  imports: [UUIDModule, PrismaModule, AlbumModule],
   controllers: [FavAlbumController],
   providers: [FavAlbumService],
 })

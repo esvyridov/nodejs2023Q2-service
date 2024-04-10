@@ -1,0 +1,52 @@
+version: '3.0'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - .env
+    restart: on-failure
+    depends_on:
+      - prisma
+      - db
+    networks:
+      - rss-network
+  prisma:
+    image: node:lts-alpine
+    volumes:
+      - .:/usr/src/app
+    working_dir: /usr/src/app
+    command: sh -c "npx prisma migrate dev"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - rss-network
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.database
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    volumes:
+      - postgres_artifacts:/var/lib/postgresql/data
+    env_file:
+      - .env
+    restart: on-failure
+    networks:
+      - rss-network
+
+networks:
+  rss-network:
+    driver: bridge
+
+volumes:
+  postgres_artifacts:

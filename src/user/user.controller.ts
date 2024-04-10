@@ -13,21 +13,30 @@ import { Response } from 'express';
 import { UUIDService } from 'src/uuid/uuid.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { User } from './entities/user.entity';
 import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
+import { User } from '@prisma/client';
 
 const MIN_LOGIN_LENGTH = 1;
 const MAX_LOGIN_LENGTH = 128;
 const MIN_PASSWORD_LENGTH = 4;
 const MAX_PASSWORD_LENGTH = 128;
 
-const filterPasswordOut = (user: User): Omit<User, 'password'> => {
+const formatUser = (
+  user: User,
+): Omit<User, 'password' | 'createdAt' | 'updatedAt'> & {
+  createdAt: number;
+  updatedAt: number;
+} => {
   const userCopy: User = { ...user };
 
   delete userCopy.password;
 
-  return userCopy;
+  return {
+    ...userCopy,
+    createdAt: user.createdAt.valueOf(),
+    updatedAt: user.updatedAt.valueOf(),
+  };
 };
 
 @ApiTags('User')
@@ -39,7 +48,7 @@ export class UserController {
   ) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
+  async create(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
     const { login, password } = createUserDto;
     const errors: Partial<Record<keyof CreateUserDto, string>> = {};
 
@@ -67,23 +76,23 @@ export class UserController {
 
     return res
       .status(HttpStatus.CREATED)
-      .json(filterPasswordOut(this.userService.create(createUserDto)));
+      .json(formatUser(await this.userService.create(createUserDto)));
   }
 
   @Get()
-  findAll() {
-    return this.userService.findAll().map(filterPasswordOut);
+  async findAll() {
+    return await this.userService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Res() res: Response) {
+  async findOne(@Param('id') id: string, @Res() res: Response) {
     if (!this.uuidService.validate(id)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         error: `ID=${id} is not valid UUID`,
       });
     }
 
-    const user = this.userService.findOne(id);
+    const user = await this.userService.findOne(id);
 
     if (!user) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -91,11 +100,11 @@ export class UserController {
       });
     }
 
-    return res.status(HttpStatus.OK).json(filterPasswordOut(user));
+    return res.status(HttpStatus.OK).json(formatUser(user));
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updatePasswordDto: UpdatePasswordDto,
     @Res() res: Response,
@@ -131,7 +140,7 @@ export class UserController {
       });
     }
 
-    const user = this.userService.findOne(id);
+    const user = await this.userService.findOne(id);
 
     if (!user) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -145,22 +154,20 @@ export class UserController {
       });
     }
 
-    this.userService.update(id, updatePasswordDto);
-
     return res
       .status(HttpStatus.OK)
-      .json(filterPasswordOut(this.userService.findOne(id)));
+      .json(formatUser(await this.userService.update(id, updatePasswordDto)));
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @Res() res: Response) {
+  async remove(@Param('id') id: string, @Res() res: Response) {
     if (!this.uuidService.validate(id)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         error: `ID=${id} is not valid UUID`,
       });
     }
 
-    const user = this.userService.findOne(id);
+    const user = await this.userService.findOne(id);
 
     if (!user) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -168,7 +175,7 @@ export class UserController {
       });
     }
 
-    this.userService.remove(id);
+    await this.userService.remove(id);
 
     return res.status(HttpStatus.NO_CONTENT).send();
   }

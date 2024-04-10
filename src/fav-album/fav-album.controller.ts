@@ -22,14 +22,14 @@ export class FavAlbumController {
   ) {}
 
   @Post(':id')
-  create(@Param('id') id: string, @Res() res: Response) {
+  async create(@Param('id') id: string, @Res() res: Response) {
     if (!this.uuidService.validate(id)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         error: `ID=${id} is not valid UUID`,
       });
     }
 
-    const album = this.albumService.findOne(id);
+    const album = await this.albumService.findOne(id);
 
     if (!album) {
       return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
@@ -37,7 +37,7 @@ export class FavAlbumController {
       });
     }
 
-    this.favAlbumService.create(album);
+    await this.favAlbumService.create(id);
 
     return res.status(HttpStatus.CREATED).json({
       ok: true,
@@ -45,14 +45,14 @@ export class FavAlbumController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @Res() res: Response) {
+  async remove(@Param('id') id: string, @Res() res: Response) {
     if (!this.uuidService.validate(id)) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         error: `ID=${id} is not valid UUID`,
       });
     }
 
-    const album = this.albumService.findOne(id);
+    const album = await this.albumService.findOne(id);
 
     if (!album) {
       return res.status(HttpStatus.NOT_FOUND).json({
@@ -60,7 +60,7 @@ export class FavAlbumController {
       });
     }
 
-    this.favAlbumService.remove(id);
+    await this.favAlbumService.remove(id);
 
     return res.status(HttpStatus.NO_CONTENT).send();
   }
